@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DatingApp.API.Data;
+using DatingApp.API.Repository;
+using DatingApp.API.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -18,16 +20,19 @@ namespace DatingApp.API
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<DataContext, DataContext>();
+
             services.AddDbContextPool<DataContext>(options =>
                 options.UseMySql("Server=localhost;Database=dating_app;User=root;Password=password;",
                     mysqlOptions => mysqlOptions.ServerVersion(new Version(8, 0, 18), ServerType.MySql)));
