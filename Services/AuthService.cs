@@ -11,7 +11,22 @@ namespace DatingApp.API.Services
             {
                 salt = hmac.Key;
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            }            
+            }
+        }
+
+        public bool ValidatePassword(string password, byte[] passwordHash, byte[] salt)
+        {
+            using (var hmac = new HMACSHA512(salt))
+            {
+                byte[] hashedPassword = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+
+                for (int i = 0; i < hashedPassword.Length; i++)
+                {
+                    if (hashedPassword[i] != passwordHash[i]) return false;
+                }
+
+                return true;
+            }
         }
     }
 }

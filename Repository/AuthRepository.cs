@@ -1,7 +1,9 @@
+using System.Linq;
 using System.Threading.Tasks;
 using DatingApp.API.Data;
 using DatingApp.API.Model;
 using DatingApp.API.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace DatingApp.API.Repository
 {
@@ -30,14 +32,20 @@ namespace DatingApp.API.Repository
             return user;
         }
 
-        public Task<User> Login(string username, string password)
+        public async Task<User> Login(string username, string password)
         {
-            throw new System.NotImplementedException();
+            User user = await this.dataContext.Users.FirstOrDefaultAsync(o => o.Username == username);
+
+            if (null == user) return null;
+
+            if (!this.authService.ValidatePassword(password, user.Password, user.Salt)) return null;
+
+            return user;
         }
 
-        public Task<bool> DoesUserExist(string username)
+        public async Task<bool> DoesUserExist(string username)
         {
-            throw new System.NotImplementedException();
+           return await this.dataContext.Users.AnyAsync(o => o.Username == username);
         }
     }
 }

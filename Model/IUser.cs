@@ -1,9 +1,7 @@
 namespace DatingApp.API.Model
 {
-    public interface IUser
+    public interface IUser : IEntity
     {
-        public int Id { get; }
-        
         public string Username { get; set; }
 
         public byte[] Password { get; set; }
