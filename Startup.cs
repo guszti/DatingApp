@@ -23,9 +23,12 @@ namespace DatingApp.API
     {
         public IConfiguration Configuration { get; }
 
+        private readonly string connectionString;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            connectionString = Configuration.GetConnectionString("myDb2");
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -37,7 +40,7 @@ namespace DatingApp.API
             services.AddScoped<IUserFactory, UserFactory>();
 
             services.AddDbContextPool<DataContext>(options =>
-                options.UseMySql("Server=localhost;Database=dating_app;User=root;Password=password;",
+                options.UseMySql(connectionString,
                     mysqlOptions => mysqlOptions.ServerVersion(new Version(8, 0, 18), ServerType.MySql)));
 
             services.AddControllers();
