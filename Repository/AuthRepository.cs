@@ -19,7 +19,7 @@ namespace DatingApp.API.Repository
             this.authService = authService;
         }
 
-        public async Task<User> Register(User user, string password)
+        public async Task<IUser> Register(User user, string password)
         {
             this.authService.CreatePasswordHash(password, out var passwordHash, out var salt);
 
@@ -32,9 +32,9 @@ namespace DatingApp.API.Repository
             return user;
         }
 
-        public async Task<User> Login(string username, string password)
+        public async Task<IUser> Login(string username, string password)
         {
-            User user = await this.dataContext.Users.FirstOrDefaultAsync(o => o.Username == username);
+            IUser user = await this.dataContext.Users.FirstOrDefaultAsync(o => o.Username == username);
 
             if (null == user) return null;
 
