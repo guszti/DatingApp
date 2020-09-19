@@ -13,17 +13,17 @@ namespace DatingApp.API.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private IAuthRepository authRepository;
+        private IAuthRepository authRepositoryInterface;
 
-        private IUserFactory userFactory;
+        private IUserFactory userFactoryInterface;
 
-        private IAuthService authService;
+        private IAuthService authServiceInterface;
 
-        public AuthController(IAuthRepository authRepository, IUserFactory userFactory, IAuthService authService)
+        public AuthController(IAuthRepository authRepositoryInterface, IUserFactory userFactoryInterface, IAuthService authServiceInterface)
         {
-            this.authRepository = authRepository;
-            this.userFactory = userFactory;
-            this.authService = authService;
+            this.authRepositoryInterface = authRepositoryInterface;
+            this.userFactoryInterface = userFactoryInterface;
+            this.authServiceInterface = authServiceInterface;
         }
 
         [HttpPost("register")]
@@ -32,11 +32,11 @@ namespace DatingApp.API.Controllers
             string username = userForRegisterDto.username.ToLower();
             string plainPassword = userForRegisterDto.password;
 
-            if (await this.authRepository.DoesUserExist(username)) return BadRequest("Username already in use.");
+            if (await this.authRepositoryInterface.DoesUserExist(username)) return BadRequest("Username already in use.");
 
-            User user = this.userFactory.CreateNamed(username);
+            User user = this.userFactoryInterface.CreateNamed(username);
 
-            IUser registeredUser = await this.authRepository.Register(user, plainPassword);
+            IUser registeredUser = await this.authRepositoryInterface.Register(user, plainPassword);
 
             return StatusCode((int) HttpStatusCode.Created);
         }
@@ -44,11 +44,11 @@ namespace DatingApp.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserForLoginDto requestUser)
         {
-            IUser user = await this.authRepository.Login(requestUser.Username.ToLower(), requestUser.Password);
+            IUser user = await this.authRepositoryInterface.Login(requestUser.Username.ToLower(), requestUser.Password);
 
             if (user == null) return Unauthorized();
 
-            string jwtToken = this.authService.CreateJwtToken(user.Username, user.Id);
+            string jwtToken = this.authServiceInterface.CreateJwtToken(user.Username, user.Id);
 
             return Ok(new
             {

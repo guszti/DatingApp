@@ -10,11 +10,11 @@ namespace DatingApp.API.Services
 {
     public class AuthService : IAuthService
     {
-        private IConfiguration configuration;
+        private IConfiguration configurationInterface;
 
-        public AuthService(IConfiguration configuration)
+        public AuthService(IConfiguration configurationInterface)
         {
-            this.configuration = configuration;
+            this.configurationInterface = configurationInterface;
         }
 
         public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] salt)
@@ -49,7 +49,7 @@ namespace DatingApp.API.Services
                 new Claim(ClaimTypes.Name, username),
             };
 
-            SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.configuration.GetSection("Token").Value));
+            SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.configurationInterface.GetSection("Token").Value));
             
             SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
             
