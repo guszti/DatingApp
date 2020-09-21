@@ -26,7 +26,7 @@ namespace DatingApp.API.Repository
             user.Password = passwordHash;
             user.Salt = salt;
 
-            await this.dataContext.Users.AddAsync(user);
+            await this.dataContext.User.AddAsync(user);
             await this.dataContext.SaveChangesAsync();
 
             return user;
@@ -34,7 +34,7 @@ namespace DatingApp.API.Repository
 
         public async Task<IUser> Login(string username, string password)
         {
-            IUser user = await this.dataContext.Users.FirstOrDefaultAsync(o => o.Username == username);
+            IUser user = await this.dataContext.User.FirstOrDefaultAsync(o => o.Username == username);
 
             if (null == user) return null;
 
@@ -45,7 +45,7 @@ namespace DatingApp.API.Repository
 
         public async Task<bool> DoesUserExist(string username)
         {
-           return await this.dataContext.Users.AnyAsync(o => o.Username == username);
+           return await this.dataContext.User.AnyAsync(o => o.Username == username);
         }
     }
 }
