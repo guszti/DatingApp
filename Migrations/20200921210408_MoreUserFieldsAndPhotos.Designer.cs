@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DatingApp.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200921194651_MoreUserFieldsAndPhotos")]
+    [Migration("20200921210408_MoreUserFieldsAndPhotos")]
     partial class MoreUserFieldsAndPhotos
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -83,8 +83,8 @@ namespace DatingApp.API.Migrations
                     b.Property<DateTime>("LastActive")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("LookingFor")
-                        .HasColumnType("int");
+                    b.Property<string>("LookingFor")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<byte[]>("Password")
                         .HasColumnType("longblob");

@@ -28,7 +28,7 @@ namespace DatingApp.API.Model
 
         private string introduction;
 
-        private Gender lookingFor;
+        private string lookingFor;
 
         private string interests;
 
@@ -101,7 +101,7 @@ namespace DatingApp.API.Model
             set=> introduction = value;
         }
 
-        public Gender LookingFor
+        public string LookingFor
         {
             get => lookingFor;
             set => lookingFor = value;

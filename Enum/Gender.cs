@@ -2,8 +2,8 @@ namespace DatingApp.API.Enum
 {
     public enum Gender
     {
-        Male,
-        Female,
-        Unknown
+        Male = 1,
+        Female = 2,
+        Unknown = 3
     }
 }

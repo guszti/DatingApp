@@ -22,7 +22,7 @@ namespace DatingApp.API.Model
         
         public string Introduction { get; set; }
         
-        public Gender LookingFor { get; set; }
+        public string LookingFor { get; set; }
         
         public string Interests { get; set; }
         
