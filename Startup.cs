@@ -35,6 +35,7 @@ namespace DatingApp.API
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IUserFactory, UserFactory>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddDbContextPool<DataContext>(options =>
                 options.UseMySql(Configuration.GetConnectionString("connection_string"),

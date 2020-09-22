@@ -35,7 +35,7 @@ namespace DatingApp.API.Controllers
             if (await this.authRepositoryInterface.DoesUserExist(username)) return BadRequest("Username already in use.");
 
             User user = this.userFactoryInterface.CreateNamed(username);
-
+        
             IUser registeredUser = await this.authRepositoryInterface.Register(user, plainPassword);
 
             return StatusCode((int) HttpStatusCode.Created);
