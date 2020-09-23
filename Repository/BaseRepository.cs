@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DatingApp.API.Data;
@@ -9,7 +8,7 @@ namespace DatingApp.API.Repository
 {
     public abstract class BaseRepository : IBaseRepository
     {
-        private DataContext context;
+        protected DataContext context;
         
         protected BaseRepository(DataContext context)
         {
@@ -26,12 +25,13 @@ namespace DatingApp.API.Repository
             this.context.Remove(entity);
         }
 
-        public async Task<T> FindById<T>(int id) where T : class, IEntity
+        public virtual async Task<T> FindById<T>(int id) where T : class, IEntity
         {
-            return await this.context.Set<T>().FirstOrDefaultAsync(o => o.Id == id);
+            return await this.context.Set<T>()
+                .FirstOrDefaultAsync(o => o.Id == id);
         }
 
-        public async Task<IEnumerable<T>> FindAll<T>() where T : class, IEntity
+        public virtual async Task<IEnumerable<T>> FindAll<T>() where T : class, IEntity
         {
             return await this.context.Set<T>().ToListAsync();
         }
