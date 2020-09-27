@@ -30,6 +30,8 @@ namespace DatingApp.API.Model
         
         public string Country { get; set; }
         
-        public Collection<Photo> Photos { get; set; }   
+        public Collection<Photo> Photos { get; set; }
+
+        public int GetAge();
     }
 }

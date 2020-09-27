@@ -15,16 +15,6 @@ namespace DatingApp.API.Repository
             this.context = context;
         }
 
-        public void AddNew<T>(T entity) where T : class
-        {
-            this.context.Add(entity);
-        }
-
-        public void Delete<T>(T entity) where T : class
-        {
-            this.context.Remove(entity);
-        }
-
         public virtual async Task<T> FindById<T>(int id) where T : class, IEntity
         {
             return await this.context.Set<T>()

@@ -1,7 +1,9 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DatingApp.API.Model
 {
+    [Table("Photo")]
     public class Photo : IPhoto
     {
         private int id;

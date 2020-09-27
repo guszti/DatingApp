@@ -42,17 +42,24 @@ namespace DatingApp.API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(UserForLoginDto requestUser)
+        public async Task<ActionResult<UserNameWIthTokenDto>> Login(UserForLoginDto requestUser)
         {
             IUser user = await this.authRepositoryInterface.Login(requestUser.Username.ToLower(), requestUser.Password);
 
-            if (user == null) return Unauthorized();
+            if (user == null) return Unauthorized("Invalid username.");
 
             string jwtToken = this.authServiceInterface.CreateJwtToken(user.Username, user.Id);
 
+            UserNameWIthTokenDto userNameWIthTokenDto = new UserNameWIthTokenDto
+            {
+                Username = user.Username,
+                Token = jwtToken
+            };
+            
             return Ok(new
             {
-                token = jwtToken
+                statusCode = StatusCode((int)HttpStatusCode.Created),
+                user = userNameWIthTokenDto
             });
         }
     }

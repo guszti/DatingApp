@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using DatingApp.API.Enum;
+using DatingApp.API.Extensions;
 
 namespace DatingApp.API.Model
 {
@@ -82,12 +83,14 @@ namespace DatingApp.API.Model
 
         public DateTime DateOfBirth
         {
-            get => dateOfBirth; set => dateOfBirth = value;
+            get => dateOfBirth;
+            set => dateOfBirth = value;
         }
 
         public string KnownAs
         {
-            get => knownAs; set => knownAs = value;
+            get => knownAs; 
+            set => knownAs = value;
         }
         
         public DateTime LastActive { 
@@ -130,6 +133,11 @@ namespace DatingApp.API.Model
         {
             get => photos;
             set => photos = value;
+        }
+
+        public int GetAge()
+        {
+            return this.dateOfBirth.CalculateAge();
         }
     }
 }
