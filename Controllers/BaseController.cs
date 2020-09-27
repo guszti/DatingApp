@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using DatingApp.API.Data;
 using DatingApp.API.Model;
+using DatingApp.API.Repository;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace DatingApp.API.Controllers
 {
@@ -12,22 +13,26 @@ namespace DatingApp.API.Controllers
     public class BaseController : ControllerBase
     {
         protected DataContext context;
+
+        protected IBaseRepository baseRepositoryInterface;
+
+        protected IMapper mapperInterface;
         
-        public BaseController(DataContext context)
+        public BaseController(DataContext context, IBaseRepository baseRepositoryInterface, IMapper mapperInterface)
         {
             this.context = context;
+            this.baseRepositoryInterface = baseRepositoryInterface;
+            this.mapperInterface = mapperInterface;
         }
         
         public async Task<ActionResult<IEnumerable<T>>> IndexAction<T>() where T : class, IEntity
         {
-            return await this.context.Set<T>().ToListAsync();
+            return Ok(await this.baseRepositoryInterface.FindAll<T>());
         }
 
         public async Task<ActionResult<T>> ShowAction<T>(int id) where T : class, IEntity
         {
-            return await this.context.Set<T>().FirstOrDefaultAsync(
-                o => o.Id == id
-                );
+            return await this.baseRepositoryInterface.FindById<T>(id);
         }
 
         public async Task<IActionResult> DeleteAction<T>(T entity) where T : class

@@ -14,7 +14,7 @@ namespace DatingApp.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
             
@@ -26,7 +26,7 @@ namespace DatingApp.API
                 {
                     var dataContext = services.GetRequiredService<DataContext>();
                     
-                    dataContext.Database.Migrate();
+                    await dataContext.Database.MigrateAsync();
                     DataSeed.SeedUserData(dataContext);
                 }
                 catch (Exception exception)

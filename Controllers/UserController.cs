@@ -1,31 +1,40 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using DatingApp.API.Data;
-using DatingApp.API.Model;
+using DatingApp.API.Dtos;
 using DatingApp.API.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DatingApp.API.Controllers
 {
-    public class UserController : BaseController
+    public class UsersController : BaseController
     {
         private IUserRepository userRepositoryInterface;
         
-        public UserController(DataContext context, IUserRepository userRepositoryInterface) : base(context)
+        public UsersController(
+            DataContext context,
+            IBaseRepository baseRepositoryInterface,
+            IMapper mapperInterface,
+            IUserRepository userRepositoryInterface
+            ) : base(context, baseRepositoryInterface, mapperInterface)
         {
             this.userRepositoryInterface = userRepositoryInterface;
         }
         
-        [HttpGet("/")]
-        public async Task<ActionResult<IEnumerable<IUser>>> Index()
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<UserWithPhotosDto>>> Index()
         {
-             return Ok(await this.userRepositoryInterface.FindAll());
+            var users = await this.userRepositoryInterface.FindAll(); 
+            
+            return Ok(this.mapperInterface.Map<IEnumerable<UserWithPhotosDto>>(users));
         }
 
-        [HttpGet("/{id}")]
-        public async Task<ActionResult<User>> Show()
+        [HttpGet("{id}")]
+        public async Task<ActionResult<UserWithPhotosDto>> Show(int id)
         {
-            return await this.ShowAction<User>(1);
+            var user = await this.userRepositoryInterface.FindById(id);
+            return this.mapperInterface.Map<UserWithPhotosDto>(user);
         }
         
         /*[HttpPost("/")]

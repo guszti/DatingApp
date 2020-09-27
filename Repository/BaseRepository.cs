@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DatingApp.API.Repository
 {
-    public abstract class BaseRepository : IBaseRepository
+    public class BaseRepository : IBaseRepository
     {
         protected DataContext context;
         
-        protected BaseRepository(DataContext context)
+        public BaseRepository(DataContext context)
         {
             this.context = context;
         }

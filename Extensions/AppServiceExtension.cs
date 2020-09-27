@@ -1,6 +1,8 @@
 using System;
+using AutoMapper;
 using DatingApp.API.Data;
 using DatingApp.API.Factory;
+using DatingApp.API.Helpers;
 using DatingApp.API.Repository;
 using DatingApp.API.Services;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +21,8 @@ namespace DatingApp.API.Extensions
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IUserFactory, UserFactory>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddAutoMapper(typeof(AutomapperProfiles).Assembly);
+            services.AddScoped<IBaseRepository, BaseRepository>();
 
             services.AddDbContextPool<DataContext>(options =>
                 options.UseMySql(configuration.GetConnectionString("connection_string"),
