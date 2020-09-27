@@ -12,14 +12,14 @@ namespace DatingApp.API.Repository
         {
         }
 
-        public async Task<User> FindById(int id)
+        public async Task<IUser> FindById(int id)
         {
             return await this.context.User
                 .Include(o => o.Photos)
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
 
-        public async Task<IEnumerable<User>> FindAll()
+        public async Task<IEnumerable<IUser>> FindAll()
         {
             return await this.context.User
                 .Include(o => o.Photos)

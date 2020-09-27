@@ -6,8 +6,8 @@ namespace DatingApp.API.Repository
 {
     public interface IUserRepository : IBaseRepository
     {
-        public Task<User> FindById(int id);
+        public Task<IUser> FindById(int id);
 
-        public Task<IEnumerable<User>> FindAll();
+        public Task<IEnumerable<IUser>> FindAll();
     }
 }
