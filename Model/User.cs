@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using DatingApp.API.Enum;
 using DatingApp.API.Extensions;
@@ -37,7 +38,7 @@ namespace DatingApp.API.Model
 
         private string country;
 
-        private Collection<Photo> photos;
+        private ICollection<Photo> photos;
         
         public int Id
         {
@@ -129,15 +130,10 @@ namespace DatingApp.API.Model
             set => country = value;
         }
 
-        public Collection<Photo> Photos
+        public ICollection<Photo> Photos
         {
             get => photos;
             set => photos = value;
-        }
-
-        public int GetAge()
-        {
-            return this.dateOfBirth.CalculateAge();
         }
     }
 }

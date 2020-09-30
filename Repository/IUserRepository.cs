@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DatingApp.API.Model;
+using DatingApp.API.Dtos;
 
 namespace DatingApp.API.Repository
 {
     public interface IUserRepository : IBaseRepository
     {
-        public Task<IUser> FindById(int id);
+        public Task<UserWithPhotosDto> FindById(int id);
 
-        public Task<IEnumerable<IUser>> FindAll();
+        public Task<IEnumerable<UserWithPhotosDto>> FindAll();
     }
 }

@@ -1,28 +1,35 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using DatingApp.API.Data;
-using DatingApp.API.Model;
+using DatingApp.API.Dtos;
 using Microsoft.EntityFrameworkCore;
 
 namespace DatingApp.API.Repository
 {
     public class UserRepository : BaseRepository, IUserRepository
     {
-        public UserRepository(DataContext context) : base(context)
+        private IMapper mapper;
+        
+        public UserRepository(DataContext context, IMapper mapper) : base(context)
         {
+            this.mapper = mapper;
         }
 
-        public async Task<IUser> FindById(int id)
+        public async Task<UserWithPhotosDto> FindById(int id)
         {
             return await this.context.User
-                .Include(o => o.Photos)
-                .FirstOrDefaultAsync(o => o.Id == id);
+                .Where(o => o.Id == id)
+                .ProjectTo<UserWithPhotosDto>(this.mapper.ConfigurationProvider)
+                .SingleOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<IUser>> FindAll()
+        public async Task<IEnumerable<UserWithPhotosDto>> FindAll()
         {
             return await this.context.User
-                .Include(o => o.Photos)
+                .ProjectTo<UserWithPhotosDto>(this.mapper.ConfigurationProvider)
                 .ToListAsync();
         }
     }

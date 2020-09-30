@@ -25,18 +25,15 @@ namespace DatingApp.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserWithPhotosDto>>> Index()
         {
-            var users = await this.userRepositoryInterface.FindAll(); 
-            
-            return Ok(this.mapperInterface.Map<IEnumerable<UserWithPhotosDto>>(users));
+            return Ok(await this.userRepositoryInterface.FindAll());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<UserWithPhotosDto>> Show(int id)
         {
-            var user = await this.userRepositoryInterface.FindById(id);
-            return this.mapperInterface.Map<UserWithPhotosDto>(user);
+            return await this.userRepositoryInterface.FindById(id);
         }
-        
+
         /*[HttpPost("/")]
         public Task<IActionResult> Create()
         {

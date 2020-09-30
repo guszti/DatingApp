@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using DatingApp.API.Enum;
 
@@ -30,8 +31,6 @@ namespace DatingApp.API.Model
         
         public string Country { get; set; }
         
-        public Collection<Photo> Photos { get; set; }
-
-        public int GetAge();
+        public ICollection<Photo> Photos { get; set; }
     }
 }
