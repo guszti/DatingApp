@@ -4,12 +4,14 @@ using AutoMapper;
 using DatingApp.API.Data;
 using DatingApp.API.Model;
 using DatingApp.API.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DatingApp.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BaseController : ControllerBase
     {
         protected DataContext context;

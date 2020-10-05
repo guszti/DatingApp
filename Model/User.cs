@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using DatingApp.API.Enum;
-using DatingApp.API.Extensions;
 
 namespace DatingApp.API.Model
 {
