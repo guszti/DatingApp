@@ -1,7 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using DatingApp.API.Data;
 using DatingApp.API.Model;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DatingApp.API.Repository
@@ -9,23 +13,42 @@ namespace DatingApp.API.Repository
     public class BaseRepository : IBaseRepository
     {
         protected DataContext context;
+
+        protected IMapper mapper;
         
-        public BaseRepository(DataContext context)
+        public BaseRepository(DataContext context, IMapper mapper)
         {
             this.context = context;
+            this.mapper = mapper;
         }
 
-        public virtual async Task<T> FindById<T>(int id) where T : class, IEntity
+        public async Task<U> FindById<T, U>(int id) where T : class, IEntity where U : class
         {
             return await this.context.Set<T>()
-                .FirstOrDefaultAsync(o => o.Id == id);
+                .Where(o => o.Id == id)
+                .ProjectTo<U>(this.mapper.ConfigurationProvider)
+                .SingleOrDefaultAsync();
         }
 
-        public virtual async Task<IEnumerable<T>> FindAll<T>() where T : class, IEntity
+        public async Task<IEnumerable<U>> FindAll<T, U>() where T : class, IEntity
         {
-            return await this.context.Set<T>().ToListAsync();
+            return await this.context.Set<T>()
+                .ProjectTo<U>(this.mapper.ConfigurationProvider)
+                .ToListAsync();
         }
-        
+
+        public async Task<T> FindById<T>(int id) where T : class, IEntity
+        {
+            return await this.context.Set<T>()
+                .Where(o => o.Id == id)
+                .SingleOrDefaultAsync();
+        }
+
+        public void Remove<T>(T entity)
+        {
+            this.context.Remove(entity);
+        }
+
         public async Task<bool> SaveAll()
         {
             return await this.context.SaveChangesAsync() > 0;

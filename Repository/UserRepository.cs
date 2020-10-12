@@ -11,11 +11,8 @@ namespace DatingApp.API.Repository
 {
     public class UserRepository : BaseRepository, IUserRepository
     {
-        private IMapper mapper;
-        
-        public UserRepository(DataContext context, IMapper mapper) : base(context)
+        public UserRepository(DataContext context, IMapper mapper) : base(context, mapper)
         {
-            this.mapper = mapper;
         }
 
         public async Task<UserWithPhotosDto> FindById(int id)

@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoMapper;
-using DatingApp.API.Data;
 using DatingApp.API.Model;
 using DatingApp.API.Repository;
 using Microsoft.AspNetCore.Authorization;
@@ -14,36 +12,52 @@ namespace DatingApp.API.Controllers
     [Authorize]
     public class BaseController : ControllerBase
     {
-        protected DataContext context;
-
         protected IBaseRepository baseRepositoryInterface;
-
-        protected IMapper mapperInterface;
         
-        public BaseController(DataContext context, IBaseRepository baseRepositoryInterface, IMapper mapperInterface)
+        public BaseController(IBaseRepository baseRepositoryInterface)
         {
-            this.context = context;
             this.baseRepositoryInterface = baseRepositoryInterface;
-            this.mapperInterface = mapperInterface;
         }
         
-        public async Task<ActionResult<IEnumerable<T>>> IndexAction<T>() where T : class, IEntity
+        public async Task<ActionResult<IEnumerable<T>>> IndexAction<T, U>() where T : class, IEntity
         {
-            return Ok(await this.baseRepositoryInterface.FindAll<T>());
+            return Ok(await this.baseRepositoryInterface.FindAll<T, U>());
         }
 
-        public async Task<ActionResult<T>> ShowAction<T>(int id) where T : class, IEntity
+        public async Task<ActionResult<U>> ShowAction<T, U>(int id) where T : class, IEntity where U : class
         {
-            return await this.baseRepositoryInterface.FindById<T>(id);
+            var resource = await this.baseRepositoryInterface.FindById<T, U>(id);
+
+            if (resource == null)
+            {
+                return NotFound();
+            }
+            
+            return Ok(resource);
         }
 
-        public async Task<IActionResult> DeleteAction<T>(T entity) where T : class
+        // public async Task<IActionResult> PutAction<T, U>(T resourceDto) where T : class
+        // {
+        //     
+        // }
+        
+        public async Task<IActionResult> DeleteAction<T>(int id) where T : class, IEntity
         {
-            this.context.Remove(entity);
+            var entity = this.baseRepositoryInterface.FindById<T>(id);
 
-            await this.context.SaveChangesAsync();
+            if (entity == null)
+            {
+                return NotFound();
+            }
+            
+            this.baseRepositoryInterface.Remove(entity);
 
-            return NoContent();
+            if (await this.baseRepositoryInterface.SaveAll())
+            {
+                return NoContent();
+            }
+
+            return BadRequest();
         }
     }
 }

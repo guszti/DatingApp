@@ -13,11 +13,9 @@ namespace DatingApp.API.Controllers
         private IUserRepository userRepositoryInterface;
         
         public UsersController(
-            DataContext context,
             IBaseRepository baseRepositoryInterface,
-            IMapper mapperInterface,
             IUserRepository userRepositoryInterface
-            ) : base(context, baseRepositoryInterface, mapperInterface)
+            ) : base(baseRepositoryInterface)
         {
             this.userRepositoryInterface = userRepositoryInterface;
         }

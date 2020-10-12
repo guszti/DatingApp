@@ -38,7 +38,7 @@ namespace DatingApp.API.Controllers
         
             IUser registeredUser = await this.authRepositoryInterface.Register(user, plainPassword);
 
-            return StatusCode((int) HttpStatusCode.Created);
+            return Created("", registeredUser);
         }
 
         [HttpPost("login")]
@@ -56,9 +56,8 @@ namespace DatingApp.API.Controllers
                 Token = jwtToken
             };
             
-            return Ok(new
+            return Created("", new
             {
-                statusCode = StatusCode((int)HttpStatusCode.Created),
                 user = userNameWIthTokenDto
             });
         }

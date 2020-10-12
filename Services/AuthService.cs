@@ -46,7 +46,7 @@ namespace DatingApp.API.Services
             Claim[] claims =
             {
                 new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-                new Claim(ClaimTypes.Name, username),
+                new Claim(ClaimTypes.Name, username)
             };
 
             SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.configurationInterface.GetSection("Token").Value));
