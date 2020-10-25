@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoMapper;
-using DatingApp.API.Data;
 using DatingApp.API.Dtos;
+using DatingApp.API.Factory;
+using DatingApp.API.Model;
 using DatingApp.API.Repository;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,44 +10,44 @@ namespace DatingApp.API.Controllers
 {
     public class UsersController : BaseController
     {
-        private IUserRepository userRepositoryInterface;
+        private IUserFactory userFactory;
         
-        public UsersController(
-            IBaseRepository baseRepositoryInterface,
-            IUserRepository userRepositoryInterface
-            ) : base(baseRepositoryInterface)
+        public UsersController(IBaseRepository baseRepositoryInterface, IUserFactory userFactory) : base(baseRepositoryInterface)
         {
-            this.userRepositoryInterface = userRepositoryInterface;
+            this.userFactory = userFactory;
         }
         
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserWithPhotosDto>>> Index()
         {
-            return Ok(await this.userRepositoryInterface.FindAll());
+            return await this.IndexAction<User, UserWithPhotosDto>();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<UserWithPhotosDto>> Show(int id)
         {
-            return await this.userRepositoryInterface.FindById(id);
+            return await this.ShowAction<User, UserWithPhotosDto>(id);
         }
 
-        /*[HttpPost("/")]
-        public Task<IActionResult> Create()
+        [HttpPost("/")]
+        public async Task<ActionResult<User>> Create(UserCreateDto user)
         {
+            var newUser = this.userFactory.CreateNew<User>();
             
-        }*/
+            return await this.CreateAction<User, UserCreateDto>(newUser, user);
+        }
 
-        /*[HttpPatch("/{id}")]
-        public Task<IActionResult> Update()
+        [HttpPut("/{id}")]
+        [HttpPatch("/{id}")]
+        public async Task<IActionResult> Update(int id, UserUpdateDto data)
         {
-            
-        }*/
+            return await this.UpdateAction<UserUpdateDto, User>(id, data);
+        }
 
-        /*[HttpDelete("/id")]
-        public Task<IActionResult> Delete()
+        [HttpDelete("/id")]
+        public async Task<IActionResult> Delete(int id)
         {
-            
-        }*/
+            return await this.DeleteAction<User>(id);
+        }
     }
 }

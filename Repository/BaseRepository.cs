@@ -49,6 +49,21 @@ namespace DatingApp.API.Repository
             this.context.Remove(entity);
         }
 
+        public void Update<T>(IEntity entity, T entityDto)
+        {
+            this.mapper.Map(entityDto, entity);
+            
+            this.context.Entry(entity).State = EntityState.Modified;
+        }
+
+        public async void AddNew<T, U>(T entity, U entityDto) where T : class, IEntity where U : class
+        {
+            this.mapper.Map(entityDto, entity);
+            
+            await this.context.Set<T>()
+                .AddAsync(entity);
+        }
+
         public async Task<bool> SaveAll()
         {
             return await this.context.SaveChangesAsync() > 0;

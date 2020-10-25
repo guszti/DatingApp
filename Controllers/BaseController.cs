@@ -12,19 +12,39 @@ namespace DatingApp.API.Controllers
     [Authorize]
     public class BaseController : ControllerBase
     {
-        protected IBaseRepository baseRepositoryInterface;
+        private IBaseRepository baseRepositoryInterface;
         
         public BaseController(IBaseRepository baseRepositoryInterface)
         {
             this.baseRepositoryInterface = baseRepositoryInterface;
         }
+
+        protected async Task<ActionResult<T>> CreateAction<T, U>(T newResource, U resourceDto) where T : class, IEntity where U : class
+        {
+            if (newResource == null || resourceDto == null)
+            {
+                return BadRequest();
+            }
+            
+            this.baseRepositoryInterface.AddNew<T, U>(newResource, resourceDto);
+
+            if (await this.baseRepositoryInterface.SaveAll())
+            {
+                return Created("", new
+                {
+                    resource = newResource
+                });
+            }
+
+            return BadRequest();
+        }
         
-        public async Task<ActionResult<IEnumerable<T>>> IndexAction<T, U>() where T : class, IEntity
+        protected async Task<ActionResult<IEnumerable<U>>> IndexAction<T, U>() where T : class, IEntity
         {
             return Ok(await this.baseRepositoryInterface.FindAll<T, U>());
         }
 
-        public async Task<ActionResult<U>> ShowAction<T, U>(int id) where T : class, IEntity where U : class
+        protected async Task<ActionResult<U>> ShowAction<T, U>(int id) where T : class, IEntity where U : class
         {
             var resource = await this.baseRepositoryInterface.FindById<T, U>(id);
 
@@ -36,14 +56,28 @@ namespace DatingApp.API.Controllers
             return Ok(resource);
         }
 
-        // public async Task<IActionResult> PutAction<T, U>(T resourceDto) where T : class
-        // {
-        //     
-        // }
-        
-        public async Task<IActionResult> DeleteAction<T>(int id) where T : class, IEntity
+        protected async Task<IActionResult> UpdateAction<T, U>(int id, T resourceDto) where U : class, IEntity
         {
-            var entity = this.baseRepositoryInterface.FindById<T>(id);
+            var resource = await this.baseRepositoryInterface.FindById<U>(id);
+
+            if (resource == null)
+            {
+                return NotFound();
+            }
+
+            this.baseRepositoryInterface.Update(resource, resourceDto);
+
+            if (await this.baseRepositoryInterface.SaveAll())
+            {
+                return NoContent();
+            }
+            
+            return BadRequest();
+        }
+        
+        protected async Task<IActionResult> DeleteAction<T>(int id) where T : class, IEntity
+        {
+            var entity = await this.baseRepositoryInterface.FindById<T>(id);
 
             if (entity == null)
             {
