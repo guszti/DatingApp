@@ -5,7 +5,6 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using DatingApp.API.Data;
 using DatingApp.API.Model;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DatingApp.API.Repository
@@ -49,12 +48,11 @@ namespace DatingApp.API.Repository
             this.context.Remove(entity);
         }
 
-        public void Update<T>(IEntity entity, T entityDto)
+        public void Update<T>(T entity)
         {
-            this.mapper.Map(entityDto, entity);
-            
             this.context.Entry(entity).State = EntityState.Modified;
         }
+        
 
         public async void AddNew<T, U>(T entity, U entityDto) where T : class, IEntity where U : class
         {

@@ -14,7 +14,7 @@ namespace DatingApp.API.Repository
 
         public void Remove<T>(T entity);
 
-        public void Update<T>(IEntity entity, T entityDto);
+        public void Update<T>(T entity);        
 
         public void AddNew<T, U>(T entity, U entityDto) where T : class, IEntity where U : class;
         

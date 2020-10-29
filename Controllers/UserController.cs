@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using DatingApp.API.Dtos;
 using DatingApp.API.Factory;
 using DatingApp.API.Model;
 using DatingApp.API.Repository;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DatingApp.API.Controllers
@@ -12,7 +15,10 @@ namespace DatingApp.API.Controllers
     {
         private IUserFactory userFactory;
         
-        public UsersController(IBaseRepository baseRepositoryInterface, IUserFactory userFactory) : base(baseRepositoryInterface)
+        public UsersController(
+            IBaseRepository baseRepositoryInterface, 
+            IMapper mapper, 
+            IUserFactory userFactory) : base(baseRepositoryInterface, mapper)
         {
             this.userFactory = userFactory;
         }
@@ -22,14 +28,14 @@ namespace DatingApp.API.Controllers
         {
             return await this.IndexAction<User, UserWithPhotosDto>();
         }
-
+        
         [HttpGet("{id}")]
         public async Task<ActionResult<UserWithPhotosDto>> Show(int id)
         {
             return await this.ShowAction<User, UserWithPhotosDto>(id);
         }
-
-        [HttpPost("/")]
+        
+        [HttpPost]
         public async Task<ActionResult<User>> Create(UserCreateDto user)
         {
             var newUser = this.userFactory.CreateNew<User>();
@@ -37,14 +43,19 @@ namespace DatingApp.API.Controllers
             return await this.CreateAction<User, UserCreateDto>(newUser, user);
         }
 
-        [HttpPut("/{id}")]
-        [HttpPatch("/{id}")]
-        public async Task<IActionResult> Update(int id, UserUpdateDto data)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, UserUpdateDto data)
         {
-            return await this.UpdateAction<UserUpdateDto, User>(id, data);
+            return await this.PutAction<UserUpdateDto, User>(id, data);
+        }
+        
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Patch(int id, [FromBody]JsonPatchDocument<UserUpdateDto> data)
+        {
+            return await this.PatchAction<User, UserUpdateDto>(id, data);
         }
 
-        [HttpDelete("/id")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             return await this.DeleteAction<User>(id);

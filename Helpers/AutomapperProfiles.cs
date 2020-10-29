@@ -3,6 +3,7 @@ using AutoMapper;
 using DatingApp.API.Dtos;
 using DatingApp.API.Extensions;
 using DatingApp.API.Model;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace DatingApp.API.Helpers
 {
@@ -26,6 +27,9 @@ namespace DatingApp.API.Helpers
                     );
             
             CreateMap<Photo, PhotoForUserDto>();
+            CreateMap<UserCreateDto, User>();
+            CreateMap<UserUpdateDto, User>();
+            CreateMap<User, UserUpdateDto>();
         }
     }
 }
