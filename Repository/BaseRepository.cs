@@ -54,10 +54,8 @@ namespace DatingApp.API.Repository
         }
         
 
-        public async void AddNew<T, U>(T entity, U entityDto) where T : class, IEntity where U : class
+        public async void AddNew<T>(T entity) where T : class, IEntity
         {
-            this.mapper.Map(entityDto, entity);
-            
             await this.context.Set<T>()
                 .AddAsync(entity);
         }

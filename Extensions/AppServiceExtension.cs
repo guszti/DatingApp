@@ -16,6 +16,7 @@ namespace DatingApp.API.Extensions
     {
         public static IServiceCollection AddAppServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
             services.AddScoped<DataContext, DataContext>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IAuthRepository, AuthRepository>();
@@ -23,6 +24,8 @@ namespace DatingApp.API.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddAutoMapper(typeof(AutomapperProfiles).Assembly);
             services.AddScoped<IBaseRepository, BaseRepository>();
+            services.AddScoped<IPhotoHandlerService, PhotoHandlerService>();
+            services.AddScoped<IPhotoFactory, PhotoFactory>();
 
             services.AddDbContextPool<DataContext>(options =>
                 options.UseMySql(configuration.GetConnectionString("connection_string"),

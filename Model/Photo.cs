@@ -22,6 +22,8 @@ namespace DatingApp.API.Model
 
         private User user;
 
+        private string publicId;
+        
         public int Id
         {
             get => id;
@@ -68,6 +70,12 @@ namespace DatingApp.API.Model
         {
             get => user;
             set => user = value;
+        }
+
+        public string PublicId
+        {
+            get => publicId;
+            set => publicId = value;
         }
     }
 }

@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
-using DatingApp.API.Dtos;
 using DatingApp.API.Model;
 using DatingApp.API.Repository;
 using Microsoft.AspNetCore.Authorization;
@@ -16,7 +14,7 @@ namespace DatingApp.API.Controllers
     [Authorize]
     public class BaseController : ControllerBase
     {
-        private IBaseRepository baseRepositoryInterface;
+        protected IBaseRepository baseRepositoryInterface;
 
         protected IMapper mapper;
         
@@ -28,12 +26,14 @@ namespace DatingApp.API.Controllers
 
         protected async Task<ActionResult<T>> CreateAction<T, U>(T newResource, U resourceDto) where T : class, IEntity where U : class
         {
-            if (newResource == null || resourceDto == null)
+            if (!ModelState.IsValid || newResource == null || resourceDto == null)
             {
                 return BadRequest();
             }
             
-            this.baseRepositoryInterface.AddNew<T, U>(newResource, resourceDto);
+            this.mapper.Map(resourceDto, newResource);
+            
+            this.baseRepositoryInterface.AddNew<T>(newResource);
 
             if (await this.baseRepositoryInterface.SaveAll())
             {
@@ -67,7 +67,7 @@ namespace DatingApp.API.Controllers
         {
             var resource = await this.baseRepositoryInterface.FindById<U>(id);
         
-            if (resource == null)
+            if (!ModelState.IsValid || resource == null || resourceDto == null)
             {
                 return NotFound();
             }
@@ -89,7 +89,7 @@ namespace DatingApp.API.Controllers
         {
             var resource = await this.baseRepositoryInterface.FindById<T>(id);
 
-            if (resource == null)
+            if (!ModelState.IsValid || resource == null || resourceDto == null)
             {
                 return NotFound();
             }

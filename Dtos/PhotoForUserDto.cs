@@ -9,5 +9,7 @@ namespace DatingApp.API.Dtos
         public bool IsMain { get; set; }
         
         public string Description { get; set; }
+        
+        public string PublicId { get; set; }
     }
 }

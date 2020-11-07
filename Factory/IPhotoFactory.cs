@@ -1,6 +1,6 @@
 namespace DatingApp.API.Factory
 {
-    public interface IPhotoFactory
+    public interface IPhotoFactory : IBaseFactory
     {
         
     }

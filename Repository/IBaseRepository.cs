@@ -16,7 +16,7 @@ namespace DatingApp.API.Repository
 
         public void Update<T>(T entity);        
 
-        public void AddNew<T, U>(T entity, U entityDto) where T : class, IEntity where U : class;
+        public void AddNew<T>(T entity) where T : class, IEntity;
         
         public Task<bool> SaveAll();
     }
