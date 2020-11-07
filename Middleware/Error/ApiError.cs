@@ -4,17 +4,17 @@ namespace DatingApp.API.Middleware.Error
 {
     public class ApiError
     {
-        private int statusCode;
+        public int StatusCode { get; }
 
-        private string message;
+        public string Message { get; }
 
-        private string details;
+        public string Details { get; }
         
         public ApiError(HttpStatusCode statusCode, string message, string details = null)
         {
-            this.statusCode = (int) statusCode;
-            this.message = message;
-            this.details = details;
+            this.StatusCode = (int) statusCode;
+            this.Message = message;
+            this.Details = details;
         }
     }
 }
