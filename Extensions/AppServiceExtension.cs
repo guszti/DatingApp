@@ -28,9 +28,12 @@ namespace DatingApp.API.Extensions
             services.AddScoped<IPhotoFactory, PhotoFactory>();
 
             services.AddDbContextPool<DataContext>(options =>
-                options.UseMySql(configuration.GetConnectionString("connection_string"),
-                    mysqlOptions => mysqlOptions.ServerVersion(new Version(8, 0, 18), ServerType.MySql)));
-
+                options.UseMySql(
+                    configuration.GetConnectionString("connection_string"),
+                    mysqlOptions => mysqlOptions.ServerVersion(new Version(8, 0, 18), ServerType.MySql)
+                )
+            );
+            
             return services;
         }
     }

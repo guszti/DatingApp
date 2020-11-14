@@ -1,4 +1,4 @@
-using System.Net;
+using System.Linq;
 using System.Threading.Tasks;
 using DatingApp.API.Dtos;
 using DatingApp.API.Factory;
@@ -42,7 +42,7 @@ namespace DatingApp.API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<UserNameWIthTokenDto>> Login(UserForLoginDto requestUser)
+        public async Task<ActionResult<LoggedInUserDto>> Login(UserForLoginDto requestUser)
         {
             IUser user = await this.authRepositoryInterface.Login(requestUser.Username.ToLower(), requestUser.Password);
 
@@ -50,15 +50,17 @@ namespace DatingApp.API.Controllers
 
             string jwtToken = this.authServiceInterface.CreateJwtToken(user.Username, user.Id);
 
-            UserNameWIthTokenDto userNameWIthTokenDto = new UserNameWIthTokenDto
+            LoggedInUserDto loggedInUserDto = new LoggedInUserDto
             {
+                Id = user.Id,
                 Username = user.Username,
-                Token = jwtToken
+                Token = jwtToken,
+                PhotoUrl = user.Photos.FirstOrDefault(photo => photo.IsMain)?.Url
             };
             
             return Created("", new
             {
-                user = userNameWIthTokenDto
+                user = loggedInUserDto
             });
         }
     }

@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using DatingApp.API.Data;
 using DatingApp.API.Model;
@@ -34,7 +33,9 @@ namespace DatingApp.API.Repository
 
         public async Task<IUser> Login(string username, string password)
         {
-            IUser user = await this.dataContext.User.FirstOrDefaultAsync(o => o.Username == username);
+            IUser user = await this.dataContext.User
+                .Include(item => item.Photos)
+                .FirstOrDefaultAsync(o => o.Username == username);
 
             if (null == user) return null;
 

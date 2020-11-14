@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using DatingApp.API.Dtos;
@@ -21,18 +22,23 @@ namespace DatingApp.API.Controllers
         private IPhotoHandlerService photoHandlerService;
 
         private IPhotoFactory photoFactory;
+
+        private IUserRepository userRepository;
         
         public UsersController(
             IBaseRepository baseRepositoryInterface, 
             IMapper mapper, 
             IUserFactory userFactory,
             IPhotoHandlerService photoHandlerService,
-            IPhotoFactory photoFactory
+            IPhotoFactory photoFactory,
+            IUserRepository userRepository
+            
             ) : base(baseRepositoryInterface, mapper)
         {
             this.userFactory = userFactory;
             this.photoHandlerService = photoHandlerService;
             this.photoFactory = photoFactory;
+            this.userRepository = userRepository;
         }
         
         [HttpGet]
@@ -80,7 +86,7 @@ namespace DatingApp.API.Controllers
         {
             if (Int32.TryParse(this.User.GetUserId(), out int userId))
             {
-                var user = await this.baseRepositoryInterface.FindById<User>(userId);
+                var user = await this.userRepository.FindById(userId);
 
                 if (user == null)
                 {
@@ -115,6 +121,45 @@ namespace DatingApp.API.Controllers
             }
 
             return BadRequest("Invalid user id.");
+        }
+
+        [HttpPut("set-main-photo/{id}")]
+        public async Task<IActionResult> SetMainPhoto(int id)
+        {
+            if (Int32.TryParse(this.User.GetUserId(), out int userId))
+            {
+                var user = await this.userRepository.FindById(userId);
+
+                if (user == null)
+                {
+                    return BadRequest($"User not found with id {userId}");
+                }
+
+                var currentMain = user.Photos.FirstOrDefault(photo => photo.IsMain);
+
+                if (currentMain != null)
+                {
+                    currentMain.IsMain = false;
+                }
+                
+                var newMain = user.Photos.FirstOrDefault(photo => photo.Id == id);
+                
+                if (newMain == null)
+                {
+                    return BadRequest($"Photo not found with id {id}");
+                }
+
+                newMain.IsMain = true;
+
+                if (await this.baseRepositoryInterface.SaveAll())
+                {
+                    return NoContent();
+                }
+                
+                return BadRequest("Failed to set main photo.");
+            }
+
+            return BadRequest("Logged in user not found.");
         }
     }
 }
