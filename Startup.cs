@@ -23,7 +23,9 @@ namespace DatingApp.API
             services.AddControllers();
             services.AddCors();
             services.AddAuthServices(this.Configuration);
-            services.AddControllersWithViews().AddNewtonsoftJson();
+            services.AddControllersWithViews().AddNewtonsoftJson(x => 
+                x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
