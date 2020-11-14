@@ -123,7 +123,7 @@ namespace DatingApp.API.Controllers
 
             if (await this.baseRepositoryInterface.SaveAll())
             {
-                return NoContent();
+                return Ok();
             }
 
             return BadRequest();

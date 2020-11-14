@@ -132,7 +132,7 @@ namespace DatingApp.API.Controllers
 
                 if (user == null)
                 {
-                    return BadRequest($"User not found with id {userId}");
+                    return NotFound($"User not found with id {userId}");
                 }
 
                 var currentMain = user.Photos.FirstOrDefault(photo => photo.IsMain);
@@ -146,7 +146,7 @@ namespace DatingApp.API.Controllers
                 
                 if (newMain == null)
                 {
-                    return BadRequest($"Photo not found with id {id}");
+                    return NotFound($"Photo not found with id {id}");
                 }
 
                 newMain.IsMain = true;
@@ -160,6 +160,53 @@ namespace DatingApp.API.Controllers
             }
 
             return BadRequest("Logged in user not found.");
+        }
+
+        [HttpDelete("remove-photo/{id}")]
+        public async Task<IActionResult> RemovePhoto(int id)
+        {
+            if (Int32.TryParse(this.User.GetUserId(), out int userId))
+            {
+                var user = await this.userRepository.FindById(userId);
+
+                if (user == null)
+                {
+                    return BadRequest($"User not found with id {userId}");
+                }
+
+                var photo = user.Photos.FirstOrDefault(item => item.Id == id);
+
+                if (null == photo)
+                {
+                    return NotFound("Photo not found.");
+                }
+
+                if (photo.IsMain)
+                {
+                    return BadRequest("Photo is set to main.");
+                }
+
+                if (null != photo.PublicId)
+                {
+                    var result = await this.photoHandlerService.RemovePhotoAsync(photo.PublicId);
+
+                    if (null != result.Error)
+                    {
+                        return BadRequest("Failed to remove photo from Cloudinary.");
+                    }
+                }
+
+                user.Photos.Remove(photo);
+
+                if (await this.userRepository.SaveAll())
+                {
+                    return Ok();
+                }
+
+                return BadRequest("Failed to remove user photo.");
+            }
+
+            return BadRequest("Could not fetch user.");
         }
     }
 }
