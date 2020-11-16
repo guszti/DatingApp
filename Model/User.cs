@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using DatingApp.API.Enum;
 
 namespace DatingApp.API.Model
@@ -10,6 +11,8 @@ namespace DatingApp.API.Model
 
         private string username;
 
+        private string plainPassword;
+        
         private byte[] password;
 
         private byte[] salt;
@@ -50,6 +53,13 @@ namespace DatingApp.API.Model
             set => username = value;
         }
 
+        [NotMapped]
+        public string PlainPassword
+        {
+            get => plainPassword;
+            set => plainPassword = value;
+        }
+        
         public byte[] Password
         {
             get => password;

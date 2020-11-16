@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using DatingApp.API.Dtos;
-using DatingApp.API.Factory;
 using DatingApp.API.Model;
 using DatingApp.API.Repository;
 using DatingApp.API.Services;
@@ -13,30 +13,36 @@ namespace DatingApp.API.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
+        private IMapper mapper;
+        
         private IAuthRepository authRepositoryInterface;
-
-        private IUserFactory userFactoryInterface;
-
+        
         private IAuthService authServiceInterface;
 
-        public AuthController(IAuthRepository authRepositoryInterface, IUserFactory userFactoryInterface, IAuthService authServiceInterface)
+        public AuthController(
+            IMapper mapper,
+            IAuthRepository authRepositoryInterface, 
+            IAuthService authServiceInterface
+        )
         {
+            this.mapper = mapper;
             this.authRepositoryInterface = authRepositoryInterface;
-            this.userFactoryInterface = userFactoryInterface;
             this.authServiceInterface = authServiceInterface;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
         {
-            string username = userForRegisterDto.username.ToLower();
-            string plainPassword = userForRegisterDto.password;
-
-            if (await this.authRepositoryInterface.DoesUserExist(username)) return BadRequest("Username already in use.");
-
-            User user = this.userFactoryInterface.CreateNamed(username);
-        
-            IUser registeredUser = await this.authRepositoryInterface.Register(user, plainPassword);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Invalid request data.");
+            }
+            
+            User user = this.mapper.Map<User>(userForRegisterDto);
+            
+            if (await this.authRepositoryInterface.DoesUserExist(user.Username)) return BadRequest("Username already in use.");
+            
+            IUser registeredUser = await this.authRepositoryInterface.Register(user);
 
             return Created("", registeredUser);
         }

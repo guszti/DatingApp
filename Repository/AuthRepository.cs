@@ -18,9 +18,9 @@ namespace DatingApp.API.Repository
             this.authService = authService;
         }
 
-        public async Task<IUser> Register(User user, string password)
+        public async Task<IUser> Register(User user)
         {
-            this.authService.CreatePasswordHash(password, out var passwordHash, out var salt);
+            this.authService.CreatePasswordHash(user.PlainPassword, out var passwordHash, out var salt);
 
             user.Password = passwordHash;
             user.Salt = salt;
