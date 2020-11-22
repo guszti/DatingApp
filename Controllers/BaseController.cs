@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using DatingApp.API.Dtos;
+using DatingApp.API.Extensions;
+using DatingApp.API.Helpers;
 using DatingApp.API.Model;
 using DatingApp.API.Repository;
 using Microsoft.AspNetCore.Authorization;
@@ -47,9 +49,13 @@ namespace DatingApp.API.Controllers
             return BadRequest();
         }
         
-        protected async Task<ActionResult<IEnumerable<U>>> IndexAction<T, U>(GridParamsDto gridParamsDto) where T : class, IEntity where U : class
+        protected async Task<ActionResult<Grid<U>>> IndexAction<T, U>(GridParamsDto gridParamsDto) where T : class, IEntity where U : class
         {
-            return Ok(await this.baseRepositoryInterface.FindAll<T, U>(gridParamsDto));
+            var result = await this.baseRepositoryInterface.FindAll<T, U>(gridParamsDto);
+            
+            Response.AddPaginationHeader(result.Page, result.Limit, result.Total, result.TotalPages);
+            
+            return Ok(result);
         }
 
         protected async Task<ActionResult<U>> ShowAction<T, U>(int id) where T : class, IEntity where U : class

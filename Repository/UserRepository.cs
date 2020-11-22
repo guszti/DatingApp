@@ -1,10 +1,11 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using DatingApp.API.Data;
 using DatingApp.API.Dtos;
+using DatingApp.API.Enum;
+using DatingApp.API.Helpers;
 using DatingApp.API.Model;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,11 +25,20 @@ namespace DatingApp.API.Repository
                 .SingleOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<UserWithPhotosDto>> FindAll()
+        public async Task<Grid<UserWithPhotosDto>> FindAll(UserParamsDto userParams)
         {
-            return await this.context.User
-                .ProjectTo<UserWithPhotosDto>(this.mapper.ConfigurationProvider)
-                .ToListAsync();
+            var query = this.context.User.AsQueryable();
+
+            if (userParams.Gender.GetType() == typeof(Gender))
+            {
+                query = query.Where(o => o.Gender == userParams.Gender).AsNoTracking();
+            }
+            
+            return await Grid<UserWithPhotosDto>.CreateGridAsync(
+                query.ProjectTo<UserWithPhotosDto>(this.mapper.ConfigurationProvider).AsNoTracking(),
+                userParams.Page,
+                userParams.Limit
+            );
         }
     }
 }

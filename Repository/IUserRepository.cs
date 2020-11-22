@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using DatingApp.API.Dtos;
+using DatingApp.API.Helpers;
 using DatingApp.API.Model;
 
 namespace DatingApp.API.Repository
@@ -9,6 +9,6 @@ namespace DatingApp.API.Repository
     {
         public Task<User> FindById(int id);
 
-        public Task<IEnumerable<UserWithPhotosDto>> FindAll();
+        public Task<Grid<UserWithPhotosDto>> FindAll(UserParamsDto userParams);
     }
 }

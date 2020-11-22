@@ -31,7 +31,7 @@ namespace DatingApp.API.Repository
                 .SingleOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<U>> FindAll<T, U>(GridParamsDto gridParamsDto) where T : class, IEntity where U : class
+        public async Task<Grid<U>> FindAll<T, U>(GridParamsDto gridParamsDto) where T : class, IEntity where U : class
         {
             var query = this.context.Set<T>()
                 .ProjectTo<U>(this.mapper.ConfigurationProvider)

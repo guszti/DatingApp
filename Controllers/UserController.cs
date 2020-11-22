@@ -1,11 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using DatingApp.API.Dtos;
 using DatingApp.API.Extensions;
 using DatingApp.API.Factory;
+using DatingApp.API.Helpers;
 using DatingApp.API.Model;
 using DatingApp.API.Repository;
 using DatingApp.API.Services;
@@ -42,9 +42,13 @@ namespace DatingApp.API.Controllers
         }
         
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserWithPhotosDto>>> Index([FromQuery]GridParamsDto gridParamsDto)
+        public async Task<ActionResult<Grid<UserWithPhotosDto>>> Index([FromQuery]UserParamsDto gridParamsDto)
         {
-            return await this.IndexAction<User, UserWithPhotosDto>(gridParamsDto);
+            var result = await this.userRepository.FindAll(gridParamsDto);
+            
+            Response.AddPaginationHeader(result.Page, result.Limit, result.Total, result.TotalPages);
+            
+            return Ok(result);
         }
         
         [HttpGet("{id}")]

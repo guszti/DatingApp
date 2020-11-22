@@ -4,9 +4,9 @@ namespace DatingApp.API.Dtos
     {
         public int Page { get; set; } = 1;
         
-        private const int MaxLimit = 50;
+        protected const int MaxLimit = 50;
 
-        private int limit = 10;
+        protected int limit = 10;
 
         public int Limit
         {
