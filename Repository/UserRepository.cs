@@ -36,8 +36,15 @@ namespace DatingApp.API.Repository
 
             var minAge = DateTime.Today.AddYears(-userParams.MaxAge - 1);
             var maxAge = DateTime.Today.AddYears(-userParams.MinAge);
-
+            Console.WriteLine(userParams.MinAge);
+            Console.WriteLine(userParams.MaxAge);
             query = query.Where(u => u.DateOfBirth >= minAge && u.DateOfBirth <= maxAge);
+
+            query = userParams.SortBy switch
+            {
+                "createdAt" => query.OrderByDescending(u => u.CreatedAt),
+                _ => query.OrderByDescending(u => u.LastActive)
+            };
             
             return await Grid<UserWithPhotosDto>.CreateGridAsync(
                 query.ProjectTo<UserWithPhotosDto>(this.mapper.ConfigurationProvider).AsNoTracking(),

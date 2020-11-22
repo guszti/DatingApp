@@ -6,12 +6,14 @@ namespace DatingApp.API.Dtos
     {
         public Gender Gender { get; set; }
 
-        private int minAge = 18;
+        private int minAge;
 
-        private int maxAge = 150;
+        private int maxAge;
 
-        public int MinAge { get; set; }
+        public int MinAge { get; set; } = 18;
 
-        public int MaxAge { get; set; }
+        public int MaxAge { get; set; } = 150;
+
+        public string SortBy { get; set; } = "lastActive";
     }
 }
