@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DatingApp.API.Dtos;
 using DatingApp.API.Model;
 
 namespace DatingApp.API.Repository
@@ -10,7 +11,7 @@ namespace DatingApp.API.Repository
 
         public Task<T> FindById<T>(int id) where T : class, IEntity;
         
-        public Task<IEnumerable<U>> FindAll<T, U>() where T : class, IEntity;
+        public Task<IEnumerable<U>> FindAll<T, U>(GridParamsDto gridParamsDto) where T : class, IEntity where U : class;
 
         public void Remove<T>(T entity);
 

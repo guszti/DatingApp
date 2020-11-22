@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using DatingApp.API.Data;
+using DatingApp.API.Dtos;
+using DatingApp.API.Helpers;
 using DatingApp.API.Model;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,11 +31,13 @@ namespace DatingApp.API.Repository
                 .SingleOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<U>> FindAll<T, U>() where T : class, IEntity
+        public async Task<IEnumerable<U>> FindAll<T, U>(GridParamsDto gridParamsDto) where T : class, IEntity where U : class
         {
-            return await this.context.Set<T>()
+            var query = this.context.Set<T>()
                 .ProjectTo<U>(this.mapper.ConfigurationProvider)
-                .ToListAsync();
+                .AsNoTracking();
+
+            return await Grid<U>.CreateGridAsync(query, gridParamsDto.Page, gridParamsDto.Limit);
         }
 
         public async Task<T> FindById<T>(int id) where T : class, IEntity

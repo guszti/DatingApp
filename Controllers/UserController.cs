@@ -42,9 +42,9 @@ namespace DatingApp.API.Controllers
         }
         
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserWithPhotosDto>>> Index()
+        public async Task<ActionResult<IEnumerable<UserWithPhotosDto>>> Index([FromQuery]GridParamsDto gridParamsDto)
         {
-            return await this.IndexAction<User, UserWithPhotosDto>();
+            return await this.IndexAction<User, UserWithPhotosDto>(gridParamsDto);
         }
         
         [HttpGet("{id}")]
