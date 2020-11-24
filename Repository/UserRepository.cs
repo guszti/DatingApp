@@ -5,6 +5,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using DatingApp.API.Data;
 using DatingApp.API.Dtos;
+using DatingApp.API.Enum;
 using DatingApp.API.Helpers;
 using DatingApp.API.Model;
 using Microsoft.EntityFrameworkCore;
@@ -29,15 +30,14 @@ namespace DatingApp.API.Repository
         {
             var query = this.context.User.AsQueryable();
 
-            if (userParams.Gender != 0)
+            if (userParams.Gender != 0 && userParams.Gender != 0)
             {
                 query = query.Where(o => o.Gender == userParams.Gender).AsNoTracking();
             }
 
             var minAge = DateTime.Today.AddYears(-userParams.MaxAge - 1);
             var maxAge = DateTime.Today.AddYears(-userParams.MinAge);
-            Console.WriteLine(userParams.MinAge);
-            Console.WriteLine(userParams.MaxAge);
+
             query = query.Where(u => u.DateOfBirth >= minAge && u.DateOfBirth <= maxAge);
 
             query = userParams.SortBy switch

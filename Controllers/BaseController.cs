@@ -15,6 +15,7 @@ namespace DatingApp.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [ServiceFilter(typeof(UpdateUserLastActive))]
     public class BaseController : ControllerBase
     {
         protected IBaseRepository baseRepositoryInterface;

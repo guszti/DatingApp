@@ -41,6 +41,10 @@ namespace DatingApp.API.Model
 
         private ICollection<Photo> photos;
 
+        private ICollection<UserLike> likedUsers;
+
+        private ICollection<UserLike> likedByUsers;
+
         public int Id
         {
             get => id;
@@ -142,6 +146,18 @@ namespace DatingApp.API.Model
         {
             get => photos;
             set => photos = value;
+        }
+
+        public ICollection<UserLike> LikedUsers
+        {
+            get => likedUsers;
+            set => likedUsers = value;
+        }
+
+        public ICollection<UserLike> LikedByUsers
+        {
+            get => likedByUsers;
+            set => likedByUsers = value;
         }
     }
 }
