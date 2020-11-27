@@ -5,7 +5,6 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using DatingApp.API.Data;
 using DatingApp.API.Dtos;
-using DatingApp.API.Enum;
 using DatingApp.API.Helpers;
 using DatingApp.API.Model;
 using Microsoft.EntityFrameworkCore;
