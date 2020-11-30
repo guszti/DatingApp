@@ -16,21 +16,25 @@ namespace DatingApp.API.Controllers
         private IUserLikeRepository userLikeRepository;
 
         private IUserLikeFactory userLikeFactory;
+
+        private IUserRepository userRepository;
             
         public UserLikeController(
             IBaseRepository baseRepositoryInterface, 
             IMapper mapper,
             IUserLikeRepository userLikeRepository,
-            IUserLikeFactory userLikeFactory
+            IUserLikeFactory userLikeFactory,
+            IUserRepository userRepository
             )
             : base(baseRepositoryInterface, mapper)
         {
             this.userLikeRepository = userLikeRepository;
             this.userLikeFactory = userLikeFactory;
+            this.userRepository = userRepository;
         }
 
         [HttpPost("{id}")]
-        public async Task<IActionResult> LikeUser(int id)
+        public async Task<IActionResult> Like(int id)
         {
             if (Int32.TryParse(User.GetUserId(), out int userId)) {
                 if (id == userId)
@@ -45,7 +49,7 @@ namespace DatingApp.API.Controllers
                     return BadRequest("Target user not found.");
                 }
 
-                var userLike = this.userLikeRepository.getUserLikeBySourceAndTarget(userId, id);
+                var userLike = await this.userLikeRepository.getUserLikeBySourceAndTarget(userId, id);
 
                 if (null != userLike)
                 {
@@ -53,7 +57,7 @@ namespace DatingApp.API.Controllers
                 }
 
                 var newUserLike = this.userLikeFactory.CreateForLike(userId, id);
-                var sourceUser = await this.baseRepositoryInterface.FindById<User>(userId);
+                var sourceUser = await this.userRepository.FindById(userId);
 
                 sourceUser.LikedUsers.Add(newUserLike);
 
@@ -69,7 +73,7 @@ namespace DatingApp.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserLikeDto>>> GetUserLikes([FromQuery] string predicate)
+        public async Task<ActionResult<IEnumerable<UserLikeDto>>> GetLikes([FromQuery] string predicate)
         {
             if (Int32.TryParse(User.GetUserId(), out int userId))
             {

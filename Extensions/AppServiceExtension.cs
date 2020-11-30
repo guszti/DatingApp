@@ -28,6 +28,7 @@ namespace DatingApp.API.Extensions
             services.AddScoped<IPhotoFactory, PhotoFactory>();
             services.AddScoped<UpdateUserLastActive>();
             services.AddScoped<IUserLikeRepository, UserLikeRepository>();
+            services.AddScoped<IUserLikeFactory, UserLikeFactory>();
 
             services.AddDbContextPool<DataContext>(options =>
                 options.UseMySql(

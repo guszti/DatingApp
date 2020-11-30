@@ -22,6 +22,7 @@ namespace DatingApp.API.Repository
             return await this.context.User
                 .Where(o => o.Id == id)
                 .Include(user => user.Photos)
+                .Include(user => user.LikedUsers)
                 .SingleOrDefaultAsync();
         }
 
