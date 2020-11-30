@@ -1,10 +1,10 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using DatingApp.API.Data;
 using DatingApp.API.Dtos;
 using DatingApp.API.Extensions;
+using DatingApp.API.Helpers;
 using DatingApp.API.Model;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,24 +30,24 @@ namespace DatingApp.API.Repository
                 .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
-        public async Task<IEnumerable<UserLikeDto>> getUserLikes(int userId, string predicate)
+        public async Task<Grid<UserLikeDto>> getUserLikes(UserLikeParamsDto userLikeParamsDto)
         {
             var users = this.context.User.OrderBy(u => u.Username).AsQueryable();
             var userLikes = this.context.UserLike.AsQueryable();
 
-            if (predicate == "liked")
+            if (userLikeParamsDto.Predicate == "liked")
             {
-                userLikes = userLikes.Where(ul => ul.SourceUserId == userId);
+                userLikes = userLikes.Where(ul => ul.SourceUserId == userLikeParamsDto.UserId);
                 users = userLikes.Select(ul => ul.LikedUser);
             }
 
-            if (predicate == "likedBy")
+            if (userLikeParamsDto.Predicate == "likedBy")
             {
-                userLikes = userLikes.Where(ul => ul.LikedUserId == userId);
+                userLikes = userLikes.Where(ul => ul.LikedUserId == userLikeParamsDto.UserId);
                 users = userLikes.Select(ul => ul.SourceUser);
             }
 
-            return await users.Select(user => new UserLikeDto
+            var result = users.Select(user => new UserLikeDto
             {
                 UserId = user.Id,
                 Age = user.DateOfBirth.CalculateAge(),
@@ -55,7 +55,9 @@ namespace DatingApp.API.Repository
                 Username = user.Username,
                 KnownAs = user.KnownAs,
                 MainPhotoUrl = user.Photos.FirstOrDefault(p => p.IsMain).Url
-            }).ToListAsync();
+            });
+
+            return await Grid<UserLikeDto>.CreateGridAsync(result, userLikeParamsDto.Page, userLikeParamsDto.Limit);
         }
     }
 }

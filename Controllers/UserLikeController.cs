@@ -1,10 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using DatingApp.API.Dtos;
 using DatingApp.API.Extensions;
 using DatingApp.API.Factory;
+using DatingApp.API.Helpers;
 using DatingApp.API.Model;
 using DatingApp.API.Repository;
 using Microsoft.AspNetCore.Mvc;
@@ -73,11 +73,13 @@ namespace DatingApp.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserLikeDto>>> GetLikes([FromQuery] string predicate)
+        public async Task<ActionResult<Grid<UserLikeDto>>> GetLikes([FromQuery] UserLikeParamsDto userLikeParamsDto)
         {
             if (Int32.TryParse(User.GetUserId(), out int userId))
             {
-                var likes = await this.userLikeRepository.getUserLikes(userId, predicate);
+                userLikeParamsDto.UserId = userId;
+                
+                var likes = await this.userLikeRepository.getUserLikes(userLikeParamsDto);
 
                 return Ok(likes);
             }

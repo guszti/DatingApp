@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using DatingApp.API.Dtos;
+using DatingApp.API.Helpers;
 using DatingApp.API.Model;
 
 namespace DatingApp.API.Repository
@@ -11,6 +11,6 @@ namespace DatingApp.API.Repository
 
         public Task<User> getUserWithLikes(int userId);
 
-        public Task<IEnumerable<UserLikeDto>> getUserLikes(int userId, string predicate);
+        public Task<Grid<UserLikeDto>> getUserLikes(UserLikeParamsDto userLikeParamsDto);
     }
 }
