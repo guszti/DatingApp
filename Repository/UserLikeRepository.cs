@@ -54,7 +54,7 @@ namespace DatingApp.API.Repository
                 City = user.City,
                 Username = user.Username,
                 KnownAs = user.KnownAs,
-                PhotoUrl = user.Photos.FirstOrDefault(p => p.IsMain).Url
+                MainPhotoUrl = user.Photos.FirstOrDefault(p => p.IsMain).Url
             }).ToListAsync();
         }
     }

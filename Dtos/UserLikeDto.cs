@@ -10,7 +10,7 @@ namespace DatingApp.API.Dtos
         
         public int Age { get; set; }
         
-        public string PhotoUrl { get; set; }
+        public string MainPhotoUrl { get; set; }
         
         public string City { get; set; }
     }
