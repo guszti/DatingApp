@@ -45,6 +45,10 @@ namespace DatingApp.API.Model
 
         private ICollection<UserLike> likedByUsers;
 
+        private ICollection<Message> receivedMessages;
+
+        private ICollection<Message> sentMessages;
+
         public int Id
         {
             get => id;
@@ -158,6 +162,18 @@ namespace DatingApp.API.Model
         {
             get => likedByUsers;
             set => likedByUsers = value;
+        }
+
+        public ICollection<Message> ReceivedMessages
+        {
+            get => receivedMessages;
+            set => receivedMessages = value;
+        }
+
+        public ICollection<Message> SentMessages
+        {
+            get => sentMessages;
+            set => sentMessages = value;
         }
     }
 }
