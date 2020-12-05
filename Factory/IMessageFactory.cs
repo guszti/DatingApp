@@ -4,6 +4,6 @@ namespace DatingApp.API.Factory
 {
     public interface IMessageFactory : IBaseFactory
     {
-        public Message CreateWithUsers(IUser source, IUser target);
+        public Message CreateWithUsers(User source, User target, string content);
     }
 }

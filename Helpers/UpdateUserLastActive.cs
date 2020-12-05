@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using DatingApp.API.Extensions;
 using DatingApp.API.Model;
+using DatingApp.API.Extensions;
 using DatingApp.API.Repository;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,14 +22,11 @@ namespace DatingApp.API.Helpers
             var userId = resultContext.HttpContext.User.GetUserId();
             var repo = resultContext.HttpContext.RequestServices.GetService<IBaseRepository>();
 
-            if (repo != null && Int32.TryParse(userId, out int id))
-            {
-                var user = await repo.FindById<User>(id);
-                
-                user.LastActive = DateTime.Now;
+            var user = await repo.FindById<User>(userId);
 
-                await repo.SaveAll();
-            }
+            user.LastActive = DateTime.Now;
+
+            await repo.SaveAll();
         }
     }
 }

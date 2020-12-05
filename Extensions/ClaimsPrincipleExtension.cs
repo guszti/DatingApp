@@ -5,9 +5,13 @@ namespace DatingApp.API.Extensions
 {
     public static class ClaimsPrincipleExtension
     {
-        public static string GetUserId(this ClaimsPrincipal user)
+        public static int GetUserId(this ClaimsPrincipal user)
         {
-            return user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (Int32.TryParse(userId, out int id)) return id;
+
+            throw new Exception("Failed to extract user id from claim.");
         }
     }
 }

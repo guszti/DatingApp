@@ -1,4 +1,4 @@
-namespace DatingApp.API.Dtos
+namespace DatingApp.API
 {
     public class GridParamsDto
     {

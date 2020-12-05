@@ -1,5 +1,5 @@
-using DatingApp.API.Extensions;
 using DatingApp.API.Middleware.Error;
+using DatingApp.API.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;

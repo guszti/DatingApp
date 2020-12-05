@@ -1,9 +1,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using DatingApp.API.Extensions;
 using DatingApp.API.Data;
 using DatingApp.API.Dtos;
-using DatingApp.API.Extensions;
 using DatingApp.API.Helpers;
 using DatingApp.API.Model;
 using Microsoft.EntityFrameworkCore;

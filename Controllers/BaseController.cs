@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
-using DatingApp.API.Dtos;
 using DatingApp.API.Extensions;
+using DatingApp.API.Dtos;
 using DatingApp.API.Helpers;
 using DatingApp.API.Model;
 using DatingApp.API.Repository;

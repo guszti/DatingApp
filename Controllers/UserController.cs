@@ -2,8 +2,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using DatingApp.API.Dtos;
 using DatingApp.API.Extensions;
+using DatingApp.API.Dtos;
 using DatingApp.API.Factory;
 using DatingApp.API.Helpers;
 using DatingApp.API.Model;
@@ -24,44 +24,43 @@ namespace DatingApp.API.Controllers
         private IPhotoFactory photoFactory;
 
         private IUserRepository userRepository;
-        
+
         public UsersController(
-            IBaseRepository baseRepositoryInterface, 
-            IMapper mapper, 
+            IBaseRepository baseRepositoryInterface,
+            IMapper mapper,
             IUserFactory userFactory,
             IPhotoHandlerService photoHandlerService,
             IPhotoFactory photoFactory,
             IUserRepository userRepository
-            
-            ) : base(baseRepositoryInterface, mapper)
+        ) : base(baseRepositoryInterface, mapper)
         {
             this.userFactory = userFactory;
             this.photoHandlerService = photoHandlerService;
             this.photoFactory = photoFactory;
             this.userRepository = userRepository;
         }
-        
+
         [HttpGet]
-        public async Task<ActionResult<Grid<UserWithPhotosDto>>> Index([FromQuery]UserParamsDto gridParamsDto)
+        public async Task<ActionResult<Grid<UserWithPhotosDto>>> Index([FromQuery] UserParamsDto gridParamsDto)
         {
             var result = await this.userRepository.FindAll(gridParamsDto);
-            
+
             Response.AddPaginationHeader(result.Page, result.Limit, result.Total, result.TotalPages);
-            
+
             return Ok(result);
         }
-        
+
         [HttpGet("{id}")]
         public async Task<ActionResult<UserWithPhotosDto>> Show(int id)
         {
             return await this.ShowAction<User, UserWithPhotosDto>(id);
         }
-        
+
         [HttpPost]
         public async Task<ActionResult<User>> Create(UserCreateDto user)
         {
             var newUser = this.userFactory.CreateNew<User>();
-            
+
             return await this.CreateAction<User, UserCreateDto>(newUser, user);
         }
 
@@ -71,9 +70,9 @@ namespace DatingApp.API.Controllers
             // TODO update logged in user only, get user -> User.GetUsername()
             return await this.PutAction<UserUpdateDto, User>(id, data);
         }
-        
+
         [HttpPatch("{id}")]
-        public async Task<IActionResult> Patch(int id, [FromBody]JsonPatchDocument<UserUpdateDto> data)
+        public async Task<IActionResult> Patch(int id, [FromBody] JsonPatchDocument<UserUpdateDto> data)
         {
             // TODO update logged in user only, get user -> User.GetUsername()
             return await this.PatchAction<User, UserUpdateDto>(id, data);
@@ -88,129 +87,117 @@ namespace DatingApp.API.Controllers
         [HttpPost("add-photo")]
         public async Task<ActionResult<PhotoForUserDto>> UploadPhoto(IFormFile file)
         {
-            if (Int32.TryParse(this.User.GetUserId(), out int userId))
+            int userId = this.User.GetUserId();
+            var user = await this.userRepository.FindById(userId);
+
+            if (user == null)
             {
-                var user = await this.userRepository.FindById(userId);
-
-                if (user == null)
-                {
-                    return BadRequest("User not found.");
-                }
-                
-                var result = await this.photoHandlerService.AddPhotoAsync(file);
-
-                if (result.Error != null)
-                {
-                    return BadRequest(result.Error.Message);
-                }
-
-                var photo = this.photoFactory.CreateNew<Photo>();
-
-                photo.Url = result.SecureUri.AbsoluteUri;
-                photo.PublicId = result.PublicId;
-
-                if (user.Photos.Count == 0)
-                {
-                    photo.IsMain = true;
-                }
-                
-                user.Photos.Add(photo);
-
-                if (await this.baseRepositoryInterface.SaveAll())
-                {
-                    return Created(photo.Url, this.mapper.Map<PhotoForUserDto>(photo));
-                }
-
-                return BadRequest("Failed to upload photo.");
+                return BadRequest("User not found.");
             }
 
-            return BadRequest("Invalid user id.");
+            var result = await this.photoHandlerService.AddPhotoAsync(file);
+
+            if (result.Error != null)
+            {
+                return BadRequest(result.Error.Message);
+            }
+
+            var photo = this.photoFactory.CreateNew<Photo>();
+
+            photo.Url = result.SecureUri.AbsoluteUri;
+            photo.PublicId = result.PublicId;
+
+            if (user.Photos.Count == 0)
+            {
+                photo.IsMain = true;
+            }
+
+            user.Photos.Add(photo);
+
+            if (await this.baseRepositoryInterface.SaveAll())
+            {
+                return Created(photo.Url, this.mapper.Map<PhotoForUserDto>(photo));
+            }
+
+            return BadRequest("Failed to upload photo.");
         }
 
         [HttpPut("set-main-photo/{id}")]
         public async Task<IActionResult> SetMainPhoto(int id)
         {
-            if (Int32.TryParse(this.User.GetUserId(), out int userId))
+            int userId = this.User.GetUserId();
+            var user = await this.userRepository.FindById(userId);
+
+            if (user == null)
             {
-                var user = await this.userRepository.FindById(userId);
-
-                if (user == null)
-                {
-                    return NotFound($"User not found with id {userId}");
-                }
-
-                var currentMain = user.Photos.FirstOrDefault(photo => photo.IsMain);
-
-                if (currentMain != null)
-                {
-                    currentMain.IsMain = false;
-                }
-                
-                var newMain = user.Photos.FirstOrDefault(photo => photo.Id == id);
-                
-                if (newMain == null)
-                {
-                    return NotFound($"Photo not found with id {id}");
-                }
-
-                newMain.IsMain = true;
-
-                if (await this.baseRepositoryInterface.SaveAll())
-                {
-                    return NoContent();
-                }
-                
-                return BadRequest("Failed to set main photo.");
+                return NotFound($"User not found with id {userId}");
             }
 
-            return BadRequest("Logged in user not found.");
+            var currentMain = user.Photos.FirstOrDefault(photo => photo.IsMain);
+
+            if (currentMain != null)
+            {
+                currentMain.IsMain = false;
+            }
+
+            var newMain = user.Photos.FirstOrDefault(photo => photo.Id == id);
+
+            if (newMain == null)
+            {
+                return NotFound($"Photo not found with id {id}");
+            }
+
+            newMain.IsMain = true;
+
+            if (await this.baseRepositoryInterface.SaveAll())
+            {
+                return NoContent();
+            }
+
+            return BadRequest("Failed to set main photo.");
         }
 
         [HttpDelete("remove-photo/{id}")]
         public async Task<IActionResult> RemovePhoto(int id)
         {
-            if (Int32.TryParse(this.User.GetUserId(), out int userId))
+            int userId = this.User.GetUserId();
+            var user = await this.userRepository.FindById(userId);
+
+            if (user == null)
             {
-                var user = await this.userRepository.FindById(userId);
-
-                if (user == null)
-                {
-                    return BadRequest($"User not found with id {userId}");
-                }
-
-                var photo = user.Photos.FirstOrDefault(item => item.Id == id);
-
-                if (null == photo)
-                {
-                    return NotFound("Photo not found.");
-                }
-
-                if (photo.IsMain)
-                {
-                    return BadRequest("Photo is set to main.");
-                }
-
-                if (null != photo.PublicId)
-                {
-                    var result = await this.photoHandlerService.RemovePhotoAsync(photo.PublicId);
-
-                    if (null != result.Error)
-                    {
-                        return BadRequest("Failed to remove photo from Cloudinary.");
-                    }
-                }
-
-                user.Photos.Remove(photo);
-
-                if (await this.userRepository.SaveAll())
-                {
-                    return Ok();
-                }
-
-                return BadRequest("Failed to remove user photo.");
+                return BadRequest($"User not found with id {userId}");
             }
 
-            return BadRequest("Could not fetch user.");
+            var photo = user.Photos.FirstOrDefault(item => item.Id == id);
+
+            if (null == photo)
+            {
+                return NotFound("Photo not found.");
+            }
+
+            if (photo.IsMain)
+            {
+                return BadRequest("Photo is set to main.");
+            }
+
+            if (null != photo.PublicId)
+            {
+                var result = await this.photoHandlerService.RemovePhotoAsync(photo.PublicId);
+
+                if (null != result.Error)
+                {
+                    return BadRequest("Failed to remove photo from Cloudinary.");
+                }
+            }
+
+            user.Photos.Remove(photo);
+
+            if (await this.userRepository.SaveAll())
+            {
+                return Ok();
+            }
+
+            return BadRequest("Failed to remove user photo.");
         }
     }
 }

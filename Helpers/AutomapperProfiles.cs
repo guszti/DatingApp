@@ -1,7 +1,7 @@
 using System.Linq;
 using AutoMapper;
-using DatingApp.API.Dtos;
 using DatingApp.API.Extensions;
+using DatingApp.API.Dtos;
 using DatingApp.API.Model;
 
 namespace DatingApp.API.Helpers
