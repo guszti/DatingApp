@@ -26,8 +26,8 @@ namespace DatingApp.API.Repository
 
             query = messageParams.Status switch
             {
-                "Inbox" => query.Where(m => m.TargetId == messageParams.UserId),
-                "Sent" => query.Where(m => m.SourceId == messageParams.UserId),
+                "Inbox" => query.Where(m => m.TargetId == messageParams.UserId && !m.TargetDeleted),
+                "Sent" => query.Where(m => m.SourceId == messageParams.UserId && !m.SourceDeleted),
                 _ => query.Where(m => m.TargetId == messageParams.UserId && m.SeenAt == null)
             };
 
@@ -47,7 +47,9 @@ namespace DatingApp.API.Repository
                 .Where(
                     m =>
                         m.SourceId == sourceId
+                        && !m.SourceDeleted
                         && m.TargetId == targetId
+                        && !m.TargetDeleted
                         || m.SourceId == targetId
                         && m.TargetId == sourceId
                 )

@@ -18,6 +18,6 @@ namespace DatingApp.API.Dtos
         
         public string TargetPhotoUrl { get; set; }
         
-        public DateTime SeenAt { get; set; }
+        public DateTime? SeenAt { get; set; }
     }
 }
