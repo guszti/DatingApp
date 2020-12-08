@@ -1,9 +1,12 @@
 using DatingApp.API.Model;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace DatingApp.API.Data
 {
-    public class DataContext : DbContext
+    public class DataContext : IdentityDbContext
+        <User, Role, int, IdentityUserClaim<int>, UserRole, IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
     {
         public DbSet<User> User { get; set; }
         
@@ -25,6 +28,18 @@ namespace DatingApp.API.Data
                 k.LikedUserId
             });
 
+            modelBuilder.Entity<User>()
+                .HasMany<UserRole>(u => u.Roles)
+                .WithOne(ur => ur.User)
+                .HasForeignKey(ur => ur.UserId)
+                .IsRequired();
+
+            modelBuilder.Entity<Role>()
+                .HasMany<UserRole>(r => r.Users)
+                .WithOne(ur => ur.Role)
+                .HasForeignKey(ur => ur.RoleId)
+                .IsRequired();
+            
             modelBuilder.Entity<UserLike>()
                 .HasOne<User>(s => s.SourceUser)
                 .WithMany(l => l.LikedUsers)

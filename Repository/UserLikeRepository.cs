@@ -32,7 +32,7 @@ namespace DatingApp.API.Repository
 
         public async Task<Grid<UserLikeDto>> getUserLikes(UserLikeParamsDto userLikeParamsDto)
         {
-            var users = this.context.User.OrderBy(u => u.Username).AsQueryable();
+            var users = this.context.User.OrderBy(u => u.UserName).AsQueryable();
             var userLikes = this.context.UserLike.AsQueryable();
 
             if (userLikeParamsDto.Predicate == "liked")
@@ -52,7 +52,7 @@ namespace DatingApp.API.Repository
                 UserId = user.Id,
                 Age = user.DateOfBirth.CalculateAge(),
                 City = user.City,
-                Username = user.Username,
+                Username = user.UserName,
                 KnownAs = user.KnownAs,
                 MainPhotoUrl = user.Photos.FirstOrDefault(p => p.IsMain).Url
             });

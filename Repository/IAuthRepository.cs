@@ -7,7 +7,7 @@ namespace DatingApp.API.Repository
     {
         public Task<IUser> Register(User user);
 
-        public Task<IUser> Login(string username, string password);
+        public Task<User> Login(string username, string password);
 
         public Task<bool> DoesUserExist(string username);
     }

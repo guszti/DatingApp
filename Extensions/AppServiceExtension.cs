@@ -35,10 +35,11 @@ namespace DatingApp.API.Extensions
             services.AddDbContextPool<DataContext>(options =>
                 options.UseMySql(
                     configuration.GetConnectionString("connection_string"),
-                    mysqlOptions => mysqlOptions.ServerVersion(new Version(8, 0, 18), ServerType.MySql)
+                    new MySqlServerVersion(new Version(8, 0, 22)),
+                    mysqlOptions => mysqlOptions.CharSetBehavior(CharSetBehavior.NeverAppend)
                 )
             );
-            
+
             return services;
         }
     }

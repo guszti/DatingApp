@@ -6,12 +6,8 @@ namespace DatingApp.API.Model
 {
     public interface IUser : IEntity
     {
-        public string Username { get; set; }
-
-        public byte[] Password { get; set; }
-
-        public byte[] Salt { get; set; }
-
+        public string PlainPassword { get; set; }
+        
         public Gender Gender { get; set; }
         
         public DateTime DateOfBirth { get; set; }
@@ -39,5 +35,7 @@ namespace DatingApp.API.Model
         public ICollection<Message> ReceivedMessages { get; set; }
         
         public ICollection<Message> SentMessages { get; set; }
+        
+        public ICollection<UserRole> Roles { get; set; }
     }
 }

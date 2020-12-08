@@ -2,21 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using DatingApp.API.Enum;
+using Microsoft.AspNetCore.Identity;
 
 namespace DatingApp.API.Model
 {
-    public class User : IUser
+    public class User : IdentityUser<int>, IUser
     {
-        private int id;
-
-        private string username;
-
         private string plainPassword;
         
-        private byte[] password;
-
-        private byte[] salt;
-
         private DateTime createdAt;
 
         private DateTime updatedAt;
@@ -49,36 +42,10 @@ namespace DatingApp.API.Model
 
         private ICollection<Message> sentMessages;
 
-        public int Id
-        {
-            get => id;
-            set => id = value;
-        }
-
-        public string Username
-        {
-            get => username;
-            set => username = value;
-        }
+        private ICollection<UserRole> roles;
 
         [NotMapped]
-        public string PlainPassword
-        {
-            get => plainPassword;
-            set => plainPassword = value;
-        }
-        
-        public byte[] Password
-        {
-            get => password;
-            set => password = value;
-        }
-
-        public byte[] Salt
-        {
-            get => salt;
-            set => salt = value;
-        }
+        public string PlainPassword { get; set; }
 
         public DateTime CreatedAt
         {
@@ -174,6 +141,12 @@ namespace DatingApp.API.Model
         {
             get => sentMessages;
             set => sentMessages = value;
+        }
+
+        public ICollection<UserRole> Roles
+        {
+            get => this.roles;
+            set => this.roles = value;
         }
     }
 }

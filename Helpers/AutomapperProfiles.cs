@@ -36,13 +36,13 @@ namespace DatingApp.API.Helpers
                 .ForMember(
                     dest => dest.SourceUsername,
                     opt => opt.MapFrom(
-                        src => src.Source.Username
+                        src => src.Source.UserName
                     )
                 )
                 .ForMember(
                     dest => dest.TargetUsername,
                     opt => opt.MapFrom(
-                        src => src.Target.Username)
+                        src => src.Target.UserName)
                 )
                 .ForMember(
                     dest => dest.SourcePhotoUrl,

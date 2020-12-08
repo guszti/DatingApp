@@ -40,7 +40,7 @@ namespace DatingApp.API.Controllers
             
             User user = this.mapper.Map<User>(userForRegisterDto);
             
-            if (await this.authRepositoryInterface.DoesUserExist(user.Username)) return BadRequest("Username already in use.");
+            if (await this.authRepositoryInterface.DoesUserExist(user.UserName)) return BadRequest("Username already in use.");
             
             IUser registeredUser = await this.authRepositoryInterface.Register(user);
 
@@ -50,17 +50,15 @@ namespace DatingApp.API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<LoggedInUserDto>> Login(UserForLoginDto requestUser)
         {
-            IUser user = await this.authRepositoryInterface.Login(requestUser.Username.ToLower(), requestUser.Password);
+            var user = await this.authRepositoryInterface.Login(requestUser.Username.ToLower(), requestUser.Password);
 
             if (user == null) return Unauthorized("Invalid username.");
-
-            string jwtToken = this.authServiceInterface.CreateJwtToken(user.Username, user.Id);
-
+            
             LoggedInUserDto loggedInUserDto = new LoggedInUserDto
             {
                 Id = user.Id,
-                Username = user.Username,
-                Token = jwtToken,
+                Username = user.UserName,
+                Token = this.authServiceInterface.CreateJwtToken(user.UserName, user.Id),
                 PhotoUrl = user.Photos.FirstOrDefault(photo => photo.IsMain)?.Url
             };
             
