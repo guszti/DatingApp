@@ -10,5 +10,7 @@ namespace DatingApp.API.Repository
         public Task<User> FindById(int id);
 
         public Task<Grid<UserWithPhotosDto>> FindAll(UserParamsDto userParams);
+
+        public Task<bool> DoesUserExist(string username);
     }
 }

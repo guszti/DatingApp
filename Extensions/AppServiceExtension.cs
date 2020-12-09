@@ -19,7 +19,6 @@ namespace DatingApp.API.Extensions
             services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
             services.AddScoped<DataContext, DataContext>();
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IUserFactory, UserFactory>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddAutoMapper(typeof(AutomapperProfiles).Assembly);

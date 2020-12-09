@@ -52,5 +52,10 @@ namespace DatingApp.API.Repository
                 userParams.Limit
             );
         }
+        
+        public async Task<bool> DoesUserExist(string username)
+        {
+            return await this.context.User.AnyAsync(o => o.UserName == username);
+        }
     }
 }

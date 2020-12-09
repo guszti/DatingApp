@@ -8,8 +8,6 @@ namespace DatingApp.API.Model
 {
     public class User : IdentityUser<int>, IUser
     {
-        private string plainPassword;
-        
         private DateTime createdAt;
 
         private DateTime updatedAt;

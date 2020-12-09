@@ -19,7 +19,7 @@ namespace DatingApp.API
         public static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
-            
+
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
@@ -27,27 +27,27 @@ namespace DatingApp.API
                 try
                 {
                     var dataContext = services.GetRequiredService<DataContext>();
-                    
+
                     await dataContext.Database.MigrateAsync();
-                    
-                    await DataSeed.SeedUserData(services.GetRequiredService<UserManager<User>>());
+
+                    await DataSeed.SeedUserData(
+                        services.GetRequiredService<UserManager<User>>(),
+                        services.GetRequiredService<RoleManager<Role>>()
+                    );
                 }
                 catch (Exception exception)
                 {
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    
+
                     logger.LogError(exception, "An error occured while loading data.");
                 }
             }
-            
+
             host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
     }
 }
