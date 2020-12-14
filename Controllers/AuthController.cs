@@ -50,11 +50,32 @@ namespace DatingApp.API.Controllers
 
             User user = this.mapper.Map<User>(userForRegisterDto);
 
+            user.UserName = userForRegisterDto.username.ToLower();
+
             if (await this.userRepository.DoesUserExist(user.UserName)) return BadRequest("Username already in use.");
 
-            var registeredUser = await this.userManager.CreateAsync(user, user.PlainPassword);
+            var userResult = await this.userManager.CreateAsync(user, user.PlainPassword);
 
-            return Created("", registeredUser);
+            if (!userResult.Succeeded)
+            {
+                return BadRequest("Failed to create user.");
+            }
+            
+            var roleResult = await this.userManager.AddToRoleAsync(user, IRole.Member);
+
+            if (!roleResult.Succeeded)
+            {
+                return BadRequest("Failed to add user to role.");
+            }
+            
+            return Created("", new
+            {
+                Id = user.Id,
+                Username = user.UserName,
+                Token = await this.authServiceInterface.CreateJwtToken(user),
+                KnownAs = user.KnownAs,
+                Gender = user.Gender
+            });
         }
 
         [HttpPost("login")]
@@ -72,7 +93,7 @@ namespace DatingApp.API.Controllers
             {
                 Id = user.Id,
                 Username = user.UserName,
-                Token = this.authServiceInterface.CreateJwtToken(user.UserName, user.Id),
+                Token = await this.authServiceInterface.CreateJwtToken(user),
                 PhotoUrl = user.Photos.FirstOrDefault(photo => photo.IsMain)?.Url
             };
 

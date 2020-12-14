@@ -1,6 +1,7 @@
 using System.Text;
 using DatingApp.API.Data;
 using DatingApp.API.Model;
+using DatingApp.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -13,25 +14,29 @@ namespace DatingApp.API.Extensions
     {
         public static IServiceCollection AddAuthServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddIdentityCore<User>(opt =>
-                {
-                    opt.Password.RequireNonAlphanumeric = false;
-                })
+            services.AddIdentityCore<User>(opt => { opt.Password.RequireNonAlphanumeric = false; })
                 .AddRoles<Role>()
                 .AddRoleManager<RoleManager<Role>>()
                 .AddSignInManager<SignInManager<User>>()
                 .AddRoleValidator<RoleValidator<Role>>()
                 .AddEntityFrameworkStores<DataContext>();
-            
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration.GetSection("Token").Value)),
+                    IssuerSigningKey =
+                        new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration.GetSection("Token").Value)),
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
+            });
+
+            services.AddAuthorization(opt =>
+            {
+                opt.AddPolicy(IAuthService.PolicyRequireAdmin, policy => policy.RequireRole(IRole.Admin));
+                opt.AddPolicy(IAuthService.PolicyRequireModerator, policy => policy.RequireRole(IRole.Moderator));
             });
 
             return services;
