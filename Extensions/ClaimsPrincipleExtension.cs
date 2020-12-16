@@ -13,5 +13,10 @@ namespace DatingApp.API.Extensions
 
             throw new Exception("Failed to extract user id from claim.");
         }
+        
+        public static string GetUsername(this ClaimsPrincipal user)
+        {
+            return user.FindFirst(ClaimTypes.Name)?.Value;
+        }
     }
 }

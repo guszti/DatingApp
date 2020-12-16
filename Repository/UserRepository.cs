@@ -57,5 +57,10 @@ namespace DatingApp.API.Repository
         {
             return await this.context.User.AnyAsync(o => o.UserName == username);
         }
+
+        public async Task<User> FindByUsername(string username)
+        {
+            return await this.context.User.FirstOrDefaultAsync(u => u.UserName == username);
+        }
     }
 }
