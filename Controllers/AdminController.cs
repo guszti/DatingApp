@@ -82,7 +82,7 @@ namespace DatingApp.API.Controllers
                 return BadRequest("Failed to add roles to user.");
             }
 
-            return Ok("Roles saved successfully.");
+            return Ok();
         }
 
         [HttpGet("photos-to-moderate")]

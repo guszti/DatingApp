@@ -1,5 +1,6 @@
 using DatingApp.API.Middleware.Error;
 using DatingApp.API.Extensions;
+using DatingApp.API.SignalR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -24,6 +25,7 @@ namespace DatingApp.API
             services.AddControllers();
             services.AddCors();
             services.AddAuthServices(this.Configuration);
+            services.AddSignalR();
 
             services.AddControllersWithViews().AddNewtonsoftJson(x => 
                 x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
@@ -37,13 +39,22 @@ namespace DatingApp.API
 
             app.UseRouting();
 
-            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            app.UseCors(x => 
+                x.AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials()
+                    .WithOrigins("http://localhost:4200")
+                );
             
             app.UseAuthentication();
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHub<PresenceHub>("hubs/presence");
+            });
         }
     }
 }

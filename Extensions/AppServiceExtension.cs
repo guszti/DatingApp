@@ -5,6 +5,7 @@ using DatingApp.API.Factory;
 using DatingApp.API.Helpers;
 using DatingApp.API.Repository;
 using DatingApp.API.Services;
+using DatingApp.API.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,7 @@ namespace DatingApp.API.Extensions
     {
         public static IServiceCollection AddAppServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddSingleton<PresenceTracker>();
             services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
             services.AddScoped<DataContext, DataContext>();
             services.AddScoped<IAuthService, AuthService>();
