@@ -32,6 +32,10 @@ namespace DatingApp.API.Extensions
             services.AddScoped<IUserLikeFactory, UserLikeFactory>();
             services.AddScoped<IMessageFactory, MessageFactory>();
             services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IGroupFactory, GroupFactory>();
+            services.AddScoped<IGroupRepository, GroupRepository>();
+            services.AddScoped<IConnectionFactory, ConnectionFactory>();
+            services.AddScoped<IConnectionRepository, ConnectionRepository>();
 
             services.AddDbContextPool<DataContext>(options =>
                 options.UseMySql(

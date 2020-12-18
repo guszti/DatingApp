@@ -29,7 +29,7 @@ namespace DatingApp.API.SignalR
             await Clients.All.SendAsync(GetOnlineUsers, currentUsers);
         }
 
-        public async override Task OnDisconnectedAsync(Exception? exception)
+        public async override Task OnDisconnectedAsync(Exception exception)
         {
             await this.presenceTracker.RemoveUserData(Context.User.GetUserId(), Context.ConnectionId);
             await Clients.Others.SendAsync(UserIsOffline, Context.User.GetUserId());

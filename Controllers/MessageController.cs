@@ -64,7 +64,7 @@ namespace DatingApp.API.Controllers
 
             return BadRequest("Failed to create message.");
         }
-
+        
         [HttpGet]
         public async Task<Grid<MessageDto>> GetMessagesForUser([FromQuery] MessageParams messageParams)
         {

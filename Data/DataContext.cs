@@ -14,6 +14,10 @@ namespace DatingApp.API.Data
         
         public DbSet<Message> Message { get; set; }
         
+        public DbSet<Group> Group { get; set; }
+        
+        public DbSet<Connection> Connection { get; set; }
+        
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
         }
