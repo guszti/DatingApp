@@ -61,7 +61,7 @@ namespace DatingApp.API.Repository
             {
                 foreach (var message in unread)
                 {
-                    message.SeenAt = DateTime.Now;
+                    message.SeenAt = DateTime.UtcNow;
                 }
 
                 await this.SaveAll();

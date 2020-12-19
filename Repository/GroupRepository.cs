@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using DatingApp.API.Data;
@@ -19,6 +20,14 @@ namespace DatingApp.API.Repository
             return await this.context.Group
                 .Include(g => g.Connections)
                 .FirstOrDefaultAsync(g => g.Name == name);
+        }
+
+        public Task<Group> GetGroupForConnection(string connectionId)
+        {
+            return this.context.Group
+                .Include(g => g.Connections)
+                .Where(g => g.Connections.Any(c => c.ConnectionId == connectionId))
+                .FirstOrDefaultAsync();
         }
     }
 }

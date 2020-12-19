@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,7 +8,7 @@ namespace DatingApp.API.SignalR
     {
         private static readonly Dictionary<int, List<string>> activeUsers = new Dictionary<int, List<string>>();
 
-        public Task AddUserData(int id, string connectionId)
+        public bool AddUserData(int id, string connectionId)
         {
             lock (activeUsers) {
                 if (activeUsers.ContainsKey(id))
@@ -19,27 +18,31 @@ namespace DatingApp.API.SignalR
                 else
                 {
                     activeUsers.Add(id, new List<string>{connectionId});
+
+                    return true;
                 }
             }
-            
-            return Task.CompletedTask;
+
+            return false;
         }
 
-        public Task RemoveUserData(int id, string connectionId)
+        public bool RemoveUserData(int id, string connectionId)
         {
             lock (activeUsers)
             {
-                if (!activeUsers.ContainsKey(id)) return Task.CompletedTask;
+                if (!activeUsers.ContainsKey(id)) return false;
 
                 activeUsers[id].Remove(connectionId);
 
                 if (activeUsers[id].Count == 0)
                 {
                     activeUsers.Remove(id);
+
+                    return true;
                 }
             }
 
-            return Task.CompletedTask;
+            return false;
         }
 
         public Task<int[]> GetActiveUsers()
@@ -52,6 +55,18 @@ namespace DatingApp.API.SignalR
             }
 
             return Task.FromResult(onlineUsers);
+        }
+
+        public List<string> GetUserConnections(int id)
+        {
+            List<string> connectionIds;
+
+            lock (activeUsers)
+            {
+                connectionIds = activeUsers.GetValueOrDefault(id);
+            }
+
+            return connectionIds;
         }
     }
 }

@@ -6,5 +6,7 @@ namespace DatingApp.API.Repository
     public interface IGroupRepository : IBaseRepository
     {
         Task<Group> GetMessageGroup(string name);
+
+        Task<Group> GetGroupForConnection(string connectionId);
     }
 }

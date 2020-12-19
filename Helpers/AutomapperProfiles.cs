@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using AutoMapper;
 using DatingApp.API.Extensions;
@@ -60,6 +61,10 @@ namespace DatingApp.API.Helpers
                         ).Url
                     )
                 );
+
+            CreateMap<DateTime, DateTime>().ConvertUsing(
+                d => DateTime.SpecifyKind(d, DateTimeKind.Utc)
+            );
         }
     }
 }

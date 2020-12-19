@@ -12,7 +12,7 @@ namespace DatingApp.API
     public class Startup
     {
         public IConfiguration Configuration { get; }
-        
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -27,7 +27,7 @@ namespace DatingApp.API
             services.AddAuthServices(this.Configuration);
             services.AddSignalR();
 
-            services.AddControllersWithViews().AddNewtonsoftJson(x => 
+            services.AddControllersWithViews().AddNewtonsoftJson(x =>
                 x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
             );
         }
@@ -39,15 +39,14 @@ namespace DatingApp.API
 
             app.UseRouting();
 
-            app.UseCors(x => 
+            app.UseCors(x =>
                 x.AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials()
                     .WithOrigins("http://localhost:4200")
-                );
-            
-            app.UseAuthentication();
+            );
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
