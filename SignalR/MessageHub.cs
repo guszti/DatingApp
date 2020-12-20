@@ -34,20 +34,20 @@ namespace DatingApp.API.SignalR
 
         private IConnectionRepository connectionRepository;
 
-        private IPresenceTrackerInterface presenceTracker;
+        private PresenceTracker presenceTracker;
 
         private IHubContext<PresenceHub> presenceHub;
 
         public MessageHub(
             IMessageRepository messageRepository,
             IMapper mapper,
-            UserRepository userRepository,
+            IUserRepository userRepository,
             IMessageFactory messageFactory,
             IGroupFactory groupFactory,
             IConnectionFactory connectionFactory,
             IGroupRepository groupRepository,
             IConnectionRepository connectionRepository,
-            IPresenceTrackerInterface presenceTracker,
+            PresenceTracker presenceTracker,
             IHubContext<PresenceHub> presenceHub
         )
         {
@@ -66,9 +66,10 @@ namespace DatingApp.API.SignalR
         public override async Task OnConnectedAsync()
         {
             var httpContext = Context.GetHttpContext();
-            var targetUsername = httpContext.Request.Query["user"].ToString();
-            var groupName = this.MakeGroupName(this.Context.User.GetUsername(), targetUsername);
-            var otherUser = this.userRepository.FindByUsername(targetUsername);
+            Int32.TryParse(httpContext.Request.Query["user"], out int targetUserId);
+            var targetUser = await this.userRepository.FindById(targetUserId);
+            var groupName = this.MakeGroupName(this.Context.User.GetUsername(), targetUser.UserName);
+            var otherUser = this.userRepository.FindByUsername(targetUser.UserName);
 
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
             
@@ -150,10 +151,11 @@ namespace DatingApp.API.SignalR
 
             if (group == null)
             {
-                this.groupRepository.AddNew<Group>(this.groupFactory.CreateNamed(name));
+                group = this.groupFactory.CreateNamed(name);
+                this.groupRepository.AddNew<Group>(group);
             }
 
-            var connection = this.connectionFactory.CreateForGroup(group);
+            var connection = this.connectionFactory.CreateForGroup(group, this.Context.ConnectionId);
             connection.Username = Context.User.GetUsername();
 
             if (await this.groupRepository.SaveAll()) return group;

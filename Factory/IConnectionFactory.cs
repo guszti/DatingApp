@@ -4,6 +4,6 @@ namespace DatingApp.API.Factory
 {
     public interface IConnectionFactory : IBaseFactory
     {
-        public Connection CreateForGroup(Group group);
+        public Connection CreateForGroup(Group group, string connectionId);
     }
 }
