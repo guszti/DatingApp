@@ -23,21 +23,21 @@ namespace DatingApp.API.Controllers
 
         private SignInManager<User> signInManager;
 
-        private IUserRepository userRepository;
+        private IUnitOfWork unitOfWork;
 
         public AuthController(
             IMapper mapper,
             IAuthService authServiceInterface,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
-            IUserRepository userRepository
+            IUnitOfWork unitOfWork
         )
         {
             this.mapper = mapper;
             this.authServiceInterface = authServiceInterface;
             this.userManager = userManager;
             this.signInManager = signInManager;
-            this.userRepository = userRepository;
+            this.unitOfWork = unitOfWork;
         }
 
         [HttpPost("register")]
@@ -52,7 +52,10 @@ namespace DatingApp.API.Controllers
 
             user.UserName = userForRegisterDto.username.ToLower();
 
-            if (await this.userRepository.DoesUserExist(user.UserName)) return BadRequest("Username already in use.");
+            if (await this.unitOfWork.UserRepository.DoesUserExist(user.UserName))
+            {
+                return BadRequest("Username already in use.");
+            }
 
             var userResult = await this.userManager.CreateAsync(user, user.PlainPassword);
 

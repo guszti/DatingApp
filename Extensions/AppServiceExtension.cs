@@ -22,21 +22,16 @@ namespace DatingApp.API.Extensions
             services.AddScoped<DataContext, DataContext>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUserFactory, UserFactory>();
-            services.AddScoped<IUserRepository, UserRepository>();
             services.AddAutoMapper(typeof(AutomapperProfiles).Assembly);
-            services.AddScoped<IBaseRepository, BaseRepository>();
             services.AddScoped<IPhotoHandlerService, PhotoHandlerService>();
             services.AddScoped<IPhotoFactory, PhotoFactory>();
             services.AddScoped<UpdateUserLastActive>();
-            services.AddScoped<IUserLikeRepository, UserLikeRepository>();
             services.AddScoped<IUserLikeFactory, UserLikeFactory>();
             services.AddScoped<IMessageFactory, MessageFactory>();
-            services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IGroupFactory, GroupFactory>();
-            services.AddScoped<IGroupRepository, GroupRepository>();
             services.AddScoped<IConnectionFactory, ConnectionFactory>();
-            services.AddScoped<IConnectionRepository, ConnectionRepository>();
-
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            
             services.AddDbContextPool<DataContext>(options =>
                 options.UseMySql(
                     configuration.GetConnectionString("connection_string"),

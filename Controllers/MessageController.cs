@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -15,24 +14,17 @@ namespace DatingApp.API.Controllers
 {
     public class MessageController : BaseController
     {
-        private IMessageRepository messageRepository;
-
         private IMessageFactory messageFactory;
 
-        private IUserRepository userRepository;
-
         public MessageController(
-            IBaseRepository baseRepositoryInterface,
+            IUnitOfWork unitOfWork,
             IMapper mapper,
-            IMessageRepository messageRepository,
-            IMessageFactory messageFactory,
-            IUserRepository userRepository
+            IMessageFactory messageFactory
         )
-            : base(baseRepositoryInterface, mapper)
+            : base(unitOfWork, mapper)
         {
-            this.messageRepository = messageRepository;
+            this.unitOfWork = unitOfWork;
             this.messageFactory = messageFactory;
-            this.userRepository = userRepository;
         }
 
         [HttpPost]
@@ -44,9 +36,9 @@ namespace DatingApp.API.Controllers
             {
                 return BadRequest("You cannot send messages to yourself.");
             }
-            
-            var sourceUser = await this.userRepository.FindById(sourceId);
-            var targetUser = await this.userRepository.FindById(createMessageDto.TargetUserId);
+
+            var sourceUser = await this.unitOfWork.UserRepository.FindById(sourceId);
+            var targetUser = await this.unitOfWork.UserRepository.FindById(createMessageDto.TargetUserId);
 
             if (sourceUser == null || targetUser == null)
             {
@@ -54,23 +46,23 @@ namespace DatingApp.API.Controllers
             }
 
             var message = this.messageFactory.CreateWithUsers(sourceUser, targetUser, createMessageDto.Content);
-            
-            this.baseRepositoryInterface.AddNew(message);
 
-            if (await this.baseRepositoryInterface.SaveAll())
+            this.unitOfWork.BaseRepository.AddNew(message);
+
+            if (await this.unitOfWork.SaveChangesAsync())
             {
                 return Created("", this.mapper.Map<MessageDto>(message));
             }
 
             return BadRequest("Failed to create message.");
         }
-        
+
         [HttpGet]
         public async Task<Grid<MessageDto>> GetMessagesForUser([FromQuery] MessageParams messageParams)
         {
             messageParams.UserId = this.User.GetUserId();
 
-            var grid = await this.messageRepository.GetMessagesForUser(messageParams);
+            var grid = await this.unitOfWork.MessageRepository.GetMessagesForUser(messageParams);
 
             Response.AddPaginationHeader(grid.Page, grid.Limit, grid.Total, grid.TotalPages);
 
@@ -82,14 +74,21 @@ namespace DatingApp.API.Controllers
         {
             var userId = this.User.GetUserId();
 
-            return await this.messageRepository.GetMessageThread(userId, id);
+            var messageThread = await this.unitOfWork.MessageRepository.GetMessageThread(userId, id);
+
+            if (this.unitOfWork.HasChanges())
+            {
+                await this.unitOfWork.SaveChangesAsync();
+            }
+
+            return messageThread;
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMessage(int id)
         {
             var userId = this.User.GetUserId();
-            var message = await this.messageRepository.FindById<Message>(id);
+            var message = await this.unitOfWork.MessageRepository.FindById<Message>(id);
 
             if (message == null)
             {
@@ -108,10 +107,10 @@ namespace DatingApp.API.Controllers
 
             if (message.SourceDeleted && message.TargetDeleted)
             {
-                this.messageRepository.Remove(message);
+                this.unitOfWork.MessageRepository.Remove(message);
             }
 
-            if (await this.messageRepository.SaveAll())
+            if (await this.unitOfWork.SaveChangesAsync())
             {
                 return Ok();
             }

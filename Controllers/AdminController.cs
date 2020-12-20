@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,8 +19,8 @@ namespace DatingApp.API.Controllers
 
         private RoleManager<Role> roleManager;
         
-        public AdminController(IBaseRepository baseRepositoryInterface, IMapper mapper, UserManager<User> userManager, RoleManager<Role> roleManager)
-            : base(baseRepositoryInterface, mapper)
+        public AdminController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager, RoleManager<Role> roleManager)
+            : base(unitOfWork, mapper)
         {
             this.userManager = userManager;
             this.roleManager = roleManager;

@@ -16,13 +16,13 @@ namespace DatingApp.API.Controllers
     [ServiceFilter(typeof(UpdateUserLastActive))]
     public class BaseController : ControllerBase
     {
-        protected IBaseRepository baseRepositoryInterface;
+        protected IUnitOfWork unitOfWork;
 
         protected IMapper mapper;
         
-        public BaseController(IBaseRepository baseRepositoryInterface, IMapper mapper)
+        public BaseController(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            this.baseRepositoryInterface = baseRepositoryInterface;
+            this.unitOfWork = unitOfWork;
             this.mapper = mapper;
         }
 
@@ -35,9 +35,9 @@ namespace DatingApp.API.Controllers
             
             this.mapper.Map(resourceDto, newResource);
             
-            this.baseRepositoryInterface.AddNew<T>(newResource);
+            this.unitOfWork.BaseRepository.AddNew<T>(newResource);
 
-            if (await this.baseRepositoryInterface.SaveAll())
+            if (await this.unitOfWork.SaveChangesAsync())
             {
                 return Created("", new
                 {
@@ -50,7 +50,7 @@ namespace DatingApp.API.Controllers
         
         protected async Task<ActionResult<Grid<U>>> IndexAction<T, U>(GridParamsDto gridParamsDto) where T : class, IEntity where U : class
         {
-            var result = await this.baseRepositoryInterface.FindAll<T, U>(gridParamsDto);
+            var result = await this.unitOfWork.BaseRepository.FindAll<T, U>(gridParamsDto);
             
             Response.AddPaginationHeader(result.Page, result.Limit, result.Total, result.TotalPages);
             
@@ -59,7 +59,7 @@ namespace DatingApp.API.Controllers
 
         protected async Task<ActionResult<U>> ShowAction<T, U>(int id) where T : class, IEntity where U : class
         {
-            var resource = await this.baseRepositoryInterface.FindById<T, U>(id);
+            var resource = await this.unitOfWork.BaseRepository.FindById<T, U>(id);
 
             if (resource == null)
             {
@@ -71,7 +71,7 @@ namespace DatingApp.API.Controllers
 
         protected async Task<IActionResult> PutAction<T, U>(int id, T resourceDto) where U : class, IEntity
         {
-            var resource = await this.baseRepositoryInterface.FindById<U>(id);
+            var resource = await this.unitOfWork.BaseRepository.FindById<U>(id);
         
             if (!ModelState.IsValid || resource == null || resourceDto == null)
             {
@@ -80,9 +80,9 @@ namespace DatingApp.API.Controllers
 
             this.mapper.Map(resourceDto, resource);
             
-            this.baseRepositoryInterface.Update(resource);
+            this.unitOfWork.BaseRepository.Update(resource);
 
-            if (await this.baseRepositoryInterface.SaveAll())
+            if (await this.unitOfWork.SaveChangesAsync())
             {
                 return NoContent();
             }
@@ -93,7 +93,7 @@ namespace DatingApp.API.Controllers
         protected async Task<IActionResult> PatchAction<T, U>(int id, JsonPatchDocument<U> resourceDto)
             where T : class, IEntity where U : class
         {
-            var resource = await this.baseRepositoryInterface.FindById<T>(id);
+            var resource = await this.unitOfWork.BaseRepository.FindById<T>(id);
 
             if (!ModelState.IsValid || resource == null || resourceDto == null)
             {
@@ -106,9 +106,9 @@ namespace DatingApp.API.Controllers
 
             this.mapper.Map(tempDto, resource);
 
-            this.baseRepositoryInterface.Update(resource);
+            this.unitOfWork.BaseRepository.Update(resource);
 
-            if (await this.baseRepositoryInterface.SaveAll())
+            if (await this.unitOfWork.SaveChangesAsync())
             {
                 return NoContent();
             }
@@ -118,16 +118,16 @@ namespace DatingApp.API.Controllers
         
         protected async Task<IActionResult> DeleteAction<T>(int id) where T : class, IEntity
         {
-            var entity = await this.baseRepositoryInterface.FindById<T>(id);
+            var entity = await this.unitOfWork.BaseRepository.FindById<T>(id);
 
             if (entity == null)
             {
                 return NotFound();
             }
             
-            this.baseRepositoryInterface.Remove(entity);
+            this.unitOfWork.BaseRepository.Remove(entity);
 
-            if (await this.baseRepositoryInterface.SaveAll())
+            if (await this.unitOfWork.SaveChangesAsync())
             {
                 return Ok();
             }

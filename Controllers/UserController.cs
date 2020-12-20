@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -22,28 +21,25 @@ namespace DatingApp.API.Controllers
         private IPhotoHandlerService photoHandlerService;
 
         private IPhotoFactory photoFactory;
-
-        private IUserRepository userRepository;
-
+        
         public UsersController(
-            IBaseRepository baseRepositoryInterface,
             IMapper mapper,
             IUserFactory userFactory,
             IPhotoHandlerService photoHandlerService,
             IPhotoFactory photoFactory,
-            IUserRepository userRepository
-        ) : base(baseRepositoryInterface, mapper)
+            IUnitOfWork unitOfWork
+        ) : base(unitOfWork, mapper)
         {
             this.userFactory = userFactory;
             this.photoHandlerService = photoHandlerService;
             this.photoFactory = photoFactory;
-            this.userRepository = userRepository;
+            this.unitOfWork = unitOfWork;
         }
 
         [HttpGet]
         public async Task<ActionResult<Grid<UserWithPhotosDto>>> Index([FromQuery] UserParamsDto gridParamsDto)
         {
-            var result = await this.userRepository.FindAll(gridParamsDto);
+            var result = await this.unitOfWork.UserRepository.FindAll(gridParamsDto);
 
             Response.AddPaginationHeader(result.Page, result.Limit, result.Total, result.TotalPages);
 
@@ -88,7 +84,7 @@ namespace DatingApp.API.Controllers
         public async Task<ActionResult<PhotoForUserDto>> UploadPhoto(IFormFile file)
         {
             int userId = this.User.GetUserId();
-            var user = await this.userRepository.FindById(userId);
+            var user = await this.unitOfWork.UserRepository.FindById(userId);
 
             if (user == null)
             {
@@ -114,7 +110,7 @@ namespace DatingApp.API.Controllers
 
             user.Photos.Add(photo);
 
-            if (await this.baseRepositoryInterface.SaveAll())
+            if (await this.unitOfWork.SaveChangesAsync())
             {
                 return Created(photo.Url, this.mapper.Map<PhotoForUserDto>(photo));
             }
@@ -126,7 +122,7 @@ namespace DatingApp.API.Controllers
         public async Task<IActionResult> SetMainPhoto(int id)
         {
             int userId = this.User.GetUserId();
-            var user = await this.userRepository.FindById(userId);
+            var user = await this.unitOfWork.UserRepository.FindById(userId);
 
             if (user == null)
             {
@@ -149,7 +145,7 @@ namespace DatingApp.API.Controllers
 
             newMain.IsMain = true;
 
-            if (await this.baseRepositoryInterface.SaveAll())
+            if (await this.unitOfWork.SaveChangesAsync())
             {
                 return NoContent();
             }
@@ -161,7 +157,7 @@ namespace DatingApp.API.Controllers
         public async Task<IActionResult> RemovePhoto(int id)
         {
             int userId = this.User.GetUserId();
-            var user = await this.userRepository.FindById(userId);
+            var user = await this.unitOfWork.UserRepository.FindById(userId);
 
             if (user == null)
             {
@@ -192,7 +188,7 @@ namespace DatingApp.API.Controllers
 
             user.Photos.Remove(photo);
 
-            if (await this.userRepository.SaveAll())
+            if (await this.unitOfWork.SaveChangesAsync())
             {
                 return Ok();
             }

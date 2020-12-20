@@ -12,24 +12,17 @@ namespace DatingApp.API.Controllers
 {
     public class UserLikeController : BaseController
     {
-        private IUserLikeRepository userLikeRepository;
-
         private IUserLikeFactory userLikeFactory;
 
-        private IUserRepository userRepository;
-
         public UserLikeController(
-            IBaseRepository baseRepositoryInterface,
+            IUnitOfWork unitOfWork,
             IMapper mapper,
-            IUserLikeRepository userLikeRepository,
-            IUserLikeFactory userLikeFactory,
-            IUserRepository userRepository
+            IUserLikeFactory userLikeFactory
         )
-            : base(baseRepositoryInterface, mapper)
+            : base(unitOfWork, mapper)
         {
-            this.userLikeRepository = userLikeRepository;
+            this.unitOfWork = unitOfWork;
             this.userLikeFactory = userLikeFactory;
-            this.userRepository = userRepository;
         }
 
         [HttpPost("{id}")]
@@ -42,14 +35,14 @@ namespace DatingApp.API.Controllers
                 return BadRequest("You cannot like yourself.");
             }
 
-            var user = await this.baseRepositoryInterface.FindById<User>(id);
+            var user = await this.unitOfWork.BaseRepository.FindById<User>(id);
 
             if (null == user)
             {
                 return BadRequest("Target user not found.");
             }
 
-            var userLike = await this.userLikeRepository.getUserLikeBySourceAndTarget(userId, id);
+            var userLike = await this.unitOfWork.UserLikeRepository.getUserLikeBySourceAndTarget(userId, id);
 
             if (null != userLike)
             {
@@ -57,11 +50,11 @@ namespace DatingApp.API.Controllers
             }
 
             var newUserLike = this.userLikeFactory.CreateForLike(userId, id);
-            var sourceUser = await this.userRepository.FindById(userId);
+            var sourceUser = await this.unitOfWork.UserRepository.FindById(userId);
 
             sourceUser.LikedUsers.Add(newUserLike);
 
-            if (await this.baseRepositoryInterface.SaveAll())
+            if (await this.unitOfWork.SaveChangesAsync())
             {
                 return Ok();
             }
@@ -76,7 +69,7 @@ namespace DatingApp.API.Controllers
 
             userLikeParamsDto.UserId = userId;
 
-            var likes = await this.userLikeRepository.getUserLikes(userLikeParamsDto);
+            var likes = await this.unitOfWork.UserLikeRepository.getUserLikes(userLikeParamsDto);
 
             return Ok(likes);
         }

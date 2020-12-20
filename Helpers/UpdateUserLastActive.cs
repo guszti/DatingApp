@@ -20,13 +20,13 @@ namespace DatingApp.API.Helpers
             }
 
             var userId = resultContext.HttpContext.User.GetUserId();
-            var repo = resultContext.HttpContext.RequestServices.GetService<IBaseRepository>();
+            var unitOfWork = resultContext.HttpContext.RequestServices.GetService<IUnitOfWork>();
 
-            var user = await repo.FindById<User>(userId);
+            var user = await unitOfWork.BaseRepository.FindById<User>(userId);
 
             user.LastActive = DateTime.UtcNow;
 
-            await repo.SaveAll();
+            await unitOfWork.SaveChangesAsync();
         }
     }
 }

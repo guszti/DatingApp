@@ -47,7 +47,7 @@ namespace DatingApp.API.Repository
                         || m.SourceId == targetId
                         && m.TargetId == sourceId
                 )
-                .OrderByDescending(m => m.CreatedAt)
+                .OrderBy(m => m.CreatedAt)
                 .ProjectTo<MessageDto>(this.mapper.ConfigurationProvider)
                 .ToListAsync();
 
@@ -59,8 +59,6 @@ namespace DatingApp.API.Repository
                 {
                     message.SeenAt = DateTime.UtcNow;
                 }
-
-                await this.SaveAll();
             }
 
             return messages;
