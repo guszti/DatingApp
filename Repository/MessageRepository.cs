@@ -22,6 +22,7 @@ namespace DatingApp.API.Repository
         {
             var query = this.context.Message
                 .OrderByDescending(m => m.CreatedAt)
+                .ProjectTo<MessageDto>(this.mapper.ConfigurationProvider)
                 .AsQueryable();
 
             query = messageParams.Status switch
@@ -30,20 +31,13 @@ namespace DatingApp.API.Repository
                 "Sent" => query.Where(m => m.SourceId == messageParams.UserId && !m.SourceDeleted),
                 _ => query.Where(m => m.TargetId == messageParams.UserId && m.SeenAt == null)
             };
-
-            var messages = query.ProjectTo<MessageDto>(this.mapper.ConfigurationProvider);
-
-            return await Grid<MessageDto>.CreateGridAsync(messages, messageParams.Page, messageParams.Limit);
+            
+            return await Grid<MessageDto>.CreateGridAsync(query, messageParams.Page, messageParams.Limit);
         }
 
         public async Task<IEnumerable<MessageDto>> GetMessageThread(int sourceId, int targetId)
         {
             var messages = await this.context.Message
-                .Include(m => m.Source)
-                .ThenInclude(s => s.Photos)
-                .Include(m => m.Target)
-                .ThenInclude(t => t.Photos)
-                .OrderByDescending(m => m.CreatedAt)
                 .Where(
                     m =>
                         m.SourceId == sourceId
@@ -53,6 +47,8 @@ namespace DatingApp.API.Repository
                         || m.SourceId == targetId
                         && m.TargetId == sourceId
                 )
+                .OrderByDescending(m => m.CreatedAt)
+                .ProjectTo<MessageDto>(this.mapper.ConfigurationProvider)
                 .ToListAsync();
 
             var unread = messages.Where(m => m.SeenAt == null).ToList();
@@ -67,7 +63,7 @@ namespace DatingApp.API.Repository
                 await this.SaveAll();
             }
 
-            return this.mapper.Map<IEnumerable<MessageDto>>(messages);
+            return messages;
         }
     }
 }

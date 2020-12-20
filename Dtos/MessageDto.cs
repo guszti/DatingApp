@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 
 namespace DatingApp.API.Dtos
 {
@@ -19,5 +20,17 @@ namespace DatingApp.API.Dtos
         public string TargetPhotoUrl { get; set; }
         
         public DateTime? SeenAt { get; set; }
+        
+        [JsonIgnore]
+        public bool SourceDeleted { get; set; }
+        
+        [JsonIgnore]
+        public bool TargetDeleted { get; set; }
+        
+        [JsonIgnore]
+        public int SourceId { get; set; }
+        
+        [JsonIgnore]
+        public int TargetId { get; set; }
     }
 }

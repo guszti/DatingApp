@@ -68,5 +68,10 @@ namespace DatingApp.API.Repository
         {
             return await this.context.SaveChangesAsync() > 0;
         }
+
+        public bool HasChanges()
+        {
+            return this.context.ChangeTracker.HasChanges();
+        }
     }
 }

@@ -62,9 +62,11 @@ namespace DatingApp.API.Helpers
                     )
                 );
 
+            /*  Not needed since stolen class
             CreateMap<DateTime, DateTime>().ConvertUsing(
                 d => DateTime.SpecifyKind(d, DateTimeKind.Utc)
             );
+            */
         }
     }
 }

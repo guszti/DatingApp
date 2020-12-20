@@ -21,5 +21,7 @@ namespace DatingApp.API.Repository
         public void AddNew<T>(T entity) where T : class;
         
         public Task<bool> SaveAll();
+
+        public bool HasChanges();
     }
 }
